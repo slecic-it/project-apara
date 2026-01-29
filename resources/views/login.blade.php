@@ -20,9 +20,9 @@
             height: 100vh;
         }
 
-        /* ================= LEFT IMAGE PANEL ================= */
+        /* LEFT IMAGE PANEL */
         .left-panel {
-            background: url("assets/images/apara-bg.jpg") no-repeat center center;
+            background: url("{{ asset('assets/images/apara-bg.jpg') }}") no-repeat center center;
             background-size: cover;
             position: relative;
         }
@@ -30,7 +30,7 @@
         .left-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(15, 61, 94, 0.65); /* Transparent overlay so image shows */
+            background: rgba(15, 61, 94, 0.65);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -50,7 +50,7 @@
             opacity: 0.95;
         }
 
-        /* ================= RIGHT LOGIN PANEL ================= */
+        /* RIGHT LOGIN PANEL */
         .login-card {
             border-radius: 14px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.25);
@@ -80,7 +80,6 @@
             color: #6c757d;
         }
 
-        /* ================= MOBILE VIEW ================= */
         @media (max-width: 768px) {
             .left-panel {
                 display: none;
@@ -118,18 +117,28 @@
                     </div>
                 </div>
 
-                <form method="POST" action="">
-                    
+                {{-- Error Message --}}
+                @if($errors->any())
+                    <div class="alert alert-danger text-center">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+
+                    <!-- Email -->
                     <div class="mb-3">
                         <label class="form-label">Email</label>
                         <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fa fa-user"></i>
                             </span>
-                            <input type="text" name="email" class="form-control" placeholder="Email" required>
+                            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
                         </div>
                     </div>
 
+                    <!-- Password -->
                     <div class="mb-3">
                         <label class="form-label">Password</label>
                         <div class="input-group">
@@ -140,7 +149,15 @@
                         </div>
                     </div>
 
-                    <div class="d-grid mt-4">
+                    <!-- Forgot Password -->
+                    <div class="mb-3 text-end">
+                        <a href="#" class="text-decoration-none small" style="color:#0f3d5e;">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <div class="d-grid mt-3">
                         <button type="submit" class="btn btn-login">
                             <i class="fa fa-sign-in-alt me-1"></i> Login
                         </button>
@@ -151,7 +168,7 @@
                 <hr>
 
                 <div class="text-center footer-text">
-                    © <?= date('Y') ?> Sri Lanka Export Credit Insurance Corporation  
+                    © {{ date('Y') }} Sri Lanka Export Credit Insurance Corporation  
                     <br> APARA System
                 </div>
 

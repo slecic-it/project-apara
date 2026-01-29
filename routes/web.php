@@ -6,7 +6,7 @@ use App\Http\Controllers\AuthController;
 
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('login');
 });
 
 Route::get('/slecic-register', [UserController::class, 'slecicRegister']);
@@ -14,3 +14,9 @@ Route::post('/slecic-register-confirm', [UserController::class, 'slecicRegisterC
 
 Route::get('/login', [AuthController::class, 'login']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
+
+Route::post('/dashboard', [AuthController::class, 'dashboard'])->name('login');
+Route::post('/authenticate', [AuthController::class, 'authenticate']);
+
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
