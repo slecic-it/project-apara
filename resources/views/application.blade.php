@@ -4,9 +4,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>New Application</title>
-        <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"/>
         <link rel="stylesheet" href="icons/font/bootstrap-icons.min.css"/>
-        <link rel="stylesheet" href="css/app.css"/>
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="shortcut icon" href="Images/logo.png" />        
     </head>
 
@@ -80,29 +80,26 @@
                                         <label for="inputProvince" class="form-label">Province<span style="color: red">*</span></label>
                                         <select class="form-control mb-3 bg-light" name="inputProvince" id="inputProvince" required>
                                         <option value="">-- Select Province --</option>
-                                            <option value="Western">Western</option>
-                                            <option value="Central">Central</option>
-                                            <option value="Southern">Southern</option>
-                                            <option value="Nothern">Nothern</option>
-                                            <option value="Eastern">Eastern</option>
-                                            <option value="North Western">North Western</option>
-                                            <option value="North Central">North Central</option>
-                                            <option value="Uva">Uva</option>
-                                            <option value="Sabaragamuwa">Sabaragamuwa</option>
+                                        @foreach($provinces as $province)
+                                            <option value="{{ $province->id }}">{{$province->name}}</option>
+                                        @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-4">
                                     <div class="w-100">
-                                    <label for="inputDistrict" class="form-label">District<span style="color: red">*</span></label>
-                                    <input type="text" name="inputDistrict" class="form-control mb-3 bg-light" id="inputDistrict" placeholder="Enter District" required>
+                                        <label for="inputDistrict" class="form-label">District<span style="color: red">*</span></label>
+                                        <select class="form-control mb-3 bg-light" name="inputDistrict" id="inputDistrict" required>
+                                            <option value="">-- Select District --</option>
+                                            
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="col-12 col-md-4">
                                     <div class="w-100">
-                                    <label for="inputDivisonalSecOffice" class="form-label">Divisonal Secretariat Office<span style="color: red">*</span></label>
-                                    <input type="text" name="inputDivisonalSecOffice" class="form-control mb-3 bg-light" id="inputDivisonalSecOffice" placeholder="Enter Divisonal Secretariat Office" required>
+                                        <label for="inputDivisonalSecOffice" class="form-label">Divisonal Secretariat Office<span style="color: red">*</span></label>
+                                        <input type="text" name="inputDivisonalSecOffice" class="form-control mb-3 bg-light" id="inputDivisonalSecOffice" placeholder="Enter Divisonal Secretariat Office" required>
                                     </div>
                                 </div>
                             </div>
@@ -126,7 +123,9 @@
                                         <label for="inputEmploymentCountry" class="form-label">Country of Employment<span style="color: red">*</span></label>
                                         <select class="form-control mb-3 bg-light" name="inputEmploymentCountry" id="inputEmploymentCountry" required>
                                         <option value="">-- Select Country --</option>
-                                            
+                                        @foreach($countries as $country)
+                                            <option value="{{$country->id}}">{{$country->name}}</option>
+                                        @endforeach
 
                                             
                                         </select>
@@ -354,6 +353,34 @@
         </div>                
 
         
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const provinceSelect = document.getElementById('inputProvince');
+    const districtSelect = document.getElementById('inputDistrict');
+
+    provinceSelect.addEventListener('change', function () {
+        const provinceId = this.value;
+
+        // Clear the districts dropdown
+        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+
+        if (provinceId) {
+            // Fetch districts for the selected province
+            fetch(`/get-districts/${provinceId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district.id;
+                        option.textContent = district.name;
+                        districtSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching districts:', error));
+        }
+    });
+});
+</script>
 
 
         

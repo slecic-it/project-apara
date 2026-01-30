@@ -2925,16 +2925,7 @@ textarea.form-control.is-invalid {
   }
 }
 
-.btn-common {
-    border: 2px solid #410445;
-    background-color: #410445;
-    color: white;
-}
-.btn-common:hover {
-    background-color: #FFCB08;
-    color: black;
-    border: 2px solid #FFCB08;
-}
+
 
 
 .btn:hover {
@@ -11764,16 +11755,6 @@ fieldset:disabled .btn {
   }
 }
 
-/* Common Button */
-.btn-common {
-    border: 2px solid #410445;
-    background-color: #410445;
-    color: white;
-}
-.btn-common:hover {
-    background-color: #FFCB08;
-    color: black;
-    border: 2px solid #FFCB08;
-}
+
 
 /*# sourceMappingURL=bootstrap.min.css.map */
