@@ -7,6 +7,12 @@ use App\Http\Controllers\AuthController;
 
 
 
+
+Route::get('/', function () {
+    return view('login');
+});
+
+
 // Route::get('/', function () {
 //         return redirect('/application/create');
 // });
@@ -17,6 +23,13 @@ Route::post('/slecic-register-confirm', [UserController::class, 'slecicRegisterC
 Route::get('/login', [AuthController::class, 'login']);
 Route::post('/authenticate', [AuthController::class, 'authenticate']);
 
+
 Route::get('/application/create', [ApplicationController::class, 'create']);
 Route::get('/get-districts/{provinceId}', [ApplicationController::class, 'getDistricts']);
+
+Route::post('/dashboard', [AuthController::class, 'dashboard'])->name('login');
+
+
+Route::post('/login', [AuthController::class, 'login'])->name('login');
+
 

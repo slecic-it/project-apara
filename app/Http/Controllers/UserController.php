@@ -15,7 +15,7 @@ class UserController extends Controller
 
     public function slecicRegisterConfirm(Request $request)
     {
-        $request->validate([
+        $request->validate([     
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8',
