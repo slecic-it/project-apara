@@ -363,7 +363,7 @@ footer {
     <!-- ACTION BAR -->
     <div class="action-bar mt-4">
         <div class="d-flex gap-2 mb-2">
-            <button class="btn btn-light border"><i class="bi bi-plus-circle"></i> New Application</button>
+            <button class="btn btn-light border" onclick="window.location.href='{{ url('/application/create') }}'"><i class="bi bi-plus-circle"></i> New Application</button>
             <button class="btn btn-light border"><i class="bi bi-download"></i> Export</button>
             <button class="btn btn-light border"><i class="bi bi-info-circle"></i> Additional Info</button>
         </div>
