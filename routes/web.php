@@ -10,6 +10,7 @@ Route::get('/', [HomeController::class, 'index']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
+
 Route::get('/bank-register', [UserController::class, 'createBank'])->name('bank.register');
 Route::post('/bank-register', [UserController::class, 'bankRegisterConfirm'])->name('bank.register.submit');
 
