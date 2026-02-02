@@ -10,219 +10,252 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <style>
-/* ===== GLOBAL ===== */
 body {
-    font-family: "Poppins", sans-serif;
-    background: #f5f7fb;
+    font-family: Arial, sans-serif;
     margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
 }
 
-/* ===== SIDEBAR ===== */
+/* SIDEBAR */
 .sidebar {
+    width: 220px;
+    height: 100vh;
+    background-color: #ffffff; /* White background */
     position: fixed;
     top: 0;
     left: 0;
-    width: 260px;
-    height: 100vh;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
-    padding: 15px 12px;
+    display: flex;
+    flex-direction: column;
+    color: #1e293b; /* Dark text */
+    padding-top: 1rem;
+    border-right: 1px solid #ddd;
 }
-
 .sidebar .logo {
-    font-size: 22px;
-    font-weight: 700;
-    color: #08595b;
+    font-weight: bold;
+    font-size: 1.2rem;
     text-align: center;
-    padding: 15px 0;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 2rem;
+    color: #2563eb; /* Logo blue */
 }
-
 .sidebar a {
+    color: #1e293b;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    margin: 4px 0;
-    font-size: 14px;
-    color: #334155;
-    text-decoration: none;
-    border-radius: 10px;
-    position: relative;
-    transition: .3s;
+    border-radius: 5px;
 }
-
-.sidebar a:hover {
-    background: #f1f5f9;
-    color: #087068;
+.sidebar a:hover, .sidebar a.active {
+    background-color: #2563eb;
+    color: white;
 }
-
-.sidebar a.active {
-    background: #eff6ff;
-    color: #07645e;
-    font-weight: 600;
+.sidebar a i {
+    margin-right: 0.5rem;
 }
-
 .submenu {
     display: none;
     flex-direction: column;
-    margin-left: 36px;
+    padding-left: 1.5rem;
 }
-
 .submenu a {
-    font-size: 13px;
-    padding: 8px 12px;
-    color: #64748b;
+    padding: 0.5rem 0;
 }
 
-.submenu a:hover {
-    background: #e0e7ff;
-    color: #066c5b;
-}
-
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
-    margin-left: 260px;
-    background: #ffffff;
-    padding: 12px 25px;
+    position: fixed;
+    left: 220px;
+    top: 0;
+    right: 0;
+    height: 60px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #e5e7eb;
+    justify-content: space-between;
+    padding: 0 1rem;
+    z-index: 10;
 }
 
-/* ===== MAIN ===== */
+/* MAIN */
 .main {
-    margin-left: 260px;
-    padding: 25px;
+    margin-left: 220px;
+    margin-top: 70px;
+    padding: 1rem 2rem;
 }
-
 .page-title {
-    font-weight: 700;
-    color: #0f172a;
+    margin-bottom: 0.2rem;
 }
 
-/* ===== FLOWCHART ===== */
+/* ================= APPLICATION FLOW ================= */
 .flow-wrapper {
     display: flex;
-    gap: 40px;
-    margin-top: 40px;
-    position: relative;
-    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
-
 .flow-step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    flex: 1;
+    min-width: 160px;
     cursor: pointer;
-}
-
-.flow-step:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    top: 25px;
-    left: 100%;
-    width: 60px;
-    height: 4px;
-    background-color: #cbd5e1;
-    z-index: -1;
-}
-
-.flow-circle {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #64748b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
     transition: 0.3s;
 }
-
-.flow-circle.completed { background-color: #22c55e; }
-.flow-circle.current   { background-color: #2563eb; }
-.flow-circle.pending   { background-color: #64748b; }
-
-.flow-title {
-    font-weight: 600;
-    font-size: 16px;
-    margin-top: 10px;
+.flow-step:hover {
+    border-color: #2563eb;
+    box-shadow: 0 0 12px rgba(37,99,235,0.4);
 }
-
-.flow-actions {
-    display: none;
-    margin-top: 5px;
-    font-size: 13px;
-    color: #475569;
+.flow-step.active {
+    border-color: #22c55e;
+    box-shadow: 0 0 15px rgba(34,197,94,0.6);
+    background: #f0fdf4;
+}
+.flow-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     text-align: center;
+    line-height: 32px;
+    font-weight: bold;
+    color: white;
 }
+.completed { background: #22c55e; }
+.current { background: #2563eb; }
+.pending { background: #64748b; }
 
+.flow-actions { display: none; font-size: 0.85rem; margin-top: 8px; }
 .flow-actions.show { display: block; }
 
 /* LEGEND */
 .legend {
-    margin-top: 40px;
     display: flex;
-    gap: 20px;
+    gap: 1rem;
+    margin-top: 1rem;
 }
-
+.legend div {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
 .legend span {
+    width: 20px;
+    height: 10px;
     display: inline-block;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    margin-right: 5px;
 }
 
-/* ===== TABLE ===== */
-.table thead th {
-    background: #1d4ed8;
-    color: #ffffff;
-    font-weight: 700;
-    border-bottom: 2px solid #dee2e6;
-    white-space: nowrap;
-}
-
-.table td { vertical-align: middle; white-space: nowrap; }
-
+/* ICON BUTTON */
 .icon-btn {
-    border: none;
     background: none;
-    color: #4b0055;
-    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
 }
 
-.icon-btn:hover { color: #000; }
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    border-right: 1px solid #ddd;
+    padding-top: 1rem;
+}
+.sidebar .logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2563eb;
+}
+.sidebar a {
+    color: #1e293b;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 6px;
+}
+.sidebar a:hover, .sidebar a.active {
+    background: #2563eb;
+    color: #fff;
+}
+.submenu { display: none; padding-left: 1.5rem; }
 
-/* ===== KPI CARDS ===== */
-.kpi-card {
-    background: #ffffff;
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 6px 18px rgba(0,0,0,.08);
+/* ================= HEADER ================= */
+.header {
+    position: fixed;
+    left: 220px;
+    right: 0;
+    top: 0;
+    height: 60px;
+    background: white;
+    border-bottom: 1px solid #ddd;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 6px solid transparent;
-    transition: .3s;
+    padding: 0 1rem;
 }
 
-.kpi-card:hover { transform: translateY(-5px); }
+/* ================= MAIN ================= */
+.main {
+    margin-left: 220px;
+    margin-top: 70px;
+    padding: 1rem 2rem;
+}
 
-/* ===== FOOTER ===== */
-footer {
-    margin-left: 260px;
-    padding: 12px;
-    background: #ffffff;
+/* ================= STATUS CARDS ================= */
+.status-summary {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+.status-card {
+    flex: 1;
+    min-width: 130px;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #fff;
+    border: 2px solid transparent;
     text-align: center;
-    font-size: 13px;
-    color: #64748b;
-    border-top: 1px solid #e5e7eb;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.status-card span {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: #fff;
+    margin-top: 6px;
+}
+
+/* Colors */
+.pending span { background: #facc15; }
+.accepted span { background: #22c55e; }
+.approved span { background: #2563eb; }
+.rejected span { background: #ef4444; }
+.payment-pending span { background: #f97316; }
+.completed span { background: #10b981; }
+.finalized span { background: #8b5cf6; }
+
+/* Highlight effect */
+.status-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(37,99,235,0.4);
+    border-color: #2563eb;
+}
+footer {
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    margin-left: 220px;
 }
 </style>
 </head>
@@ -282,10 +315,20 @@ footer {
     <h4 class="page-title">System Dashboard</h4>
     <p class="text-muted mb-4">Real-time APARA system overview</p>
 
+    <!-- ===== STATUS SUMMARY ===== -->
+    <div class="status-summary">
+        <div class="status-card pending">Pending<br><span id="pendingCount">0</span></div>
+        <div class="status-card accepted">Accepted<br><span id="acceptedCount">0</span></div>
+        <div class="status-card approved">Approved<br><span id="approvedCount">0</span></div>
+        <div class="status-card rejected">Rejected<br><span id="rejectedCount">0</span></div>
+        <div class="status-card payment-pending">Payment Pending<br><span id="paymentPendingCount">0</span></div>
+        <div class="status-card completed">Completed Payments<br><span id="completedCount">0</span></div>
+        <div class="status-card finalized">Finalized<br><span id="finalizedCount">0</span></div>
+    </div>
+
     <!-- APPLICATION WORKFLOW -->
     <h5 class="mt-4">Application Workflow</h5>
     <div class="flow-wrapper">
-
       <!-- STEP 1 -->
       <div class="flow-step" data-step="submission">
         <div class="flow-circle completed">1</div>
@@ -294,9 +337,8 @@ footer {
             Fill form<br>
             Upload documents<br>
             Submit application
-        </div>
+       </div>
       </div>
-
       <!-- STEP 2 -->
       <div class="flow-step" data-step="validation">
         <div class="flow-circle current">2</div>
@@ -307,7 +349,6 @@ footer {
             Confirm eligibility
         </div>
       </div>
-
       <!-- STEP 3 -->
       <div class="flow-step" data-step="review">
         <div class="flow-circle pending">3</div>
@@ -318,7 +359,6 @@ footer {
             Add comments
         </div>
       </div>
-
       <!-- STEP 4 -->
       <div class="flow-step" data-step="approval">
         <div class="flow-circle pending">4</div>
@@ -328,7 +368,6 @@ footer {
             Notify applicant
         </div>
       </div>
-
       <!-- STEP 5 -->
       <div class="flow-step" data-step="processing">
         <div class="flow-circle pending">5</div>
@@ -339,7 +378,6 @@ footer {
             Update records
         </div>
       </div>
-
       <!-- STEP 6 -->
       <div class="flow-step" data-step="completion">
         <div class="flow-circle pending">6</div>
@@ -350,7 +388,6 @@ footer {
             Send final report
         </div>
       </div>
-
     </div>
 
     <!-- LEGEND -->
@@ -394,7 +431,7 @@ footer {
                         <th>Schedule</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="applicationTable">
                     <tr>
                         <td>APP-0012</td>
                         <td>PR-556</td>
@@ -440,14 +477,43 @@ const flowSteps = document.querySelectorAll('.flow-step');
 flowSteps.forEach(step => {
     step.addEventListener('click', () => {
         const stepName = step.dataset.step;
-        
-        // Hide all actions first
         document.querySelectorAll('.flow-actions').forEach(action => action.classList.remove('show'));
-        
-        // Show only clicked step actions
         document.getElementById(stepName + 'Actions').classList.add('show');
     });
 });
+
+// DYNAMIC STATUS COUNTS
+function updateStatusCounts() {
+    const table = document.getElementById('applicationTable');
+    const rows = table.querySelectorAll('tr');
+    let pending = 0, accepted = 0, approved = 0, rejected = 0, paymentPending = 0, completed = 0, finalized = 0;
+
+    rows.forEach(row => {
+        const statusText = row.cells[7].innerText.toLowerCase();
+        const paymentIcon = row.cells[8].querySelector('i');
+        
+        if(statusText.includes('pending')) pending++;
+        if(statusText.includes('accepted')) accepted++;
+        if(statusText.includes('approved')) approved++;
+        if(statusText.includes('rejected')) rejected++;
+        if(paymentIcon && paymentIcon.classList.contains('bi-credit-card')) paymentPending++;
+        
+        const receiptIcon = row.cells[10].querySelector('i');
+        const acceptanceIcon = row.cells[11].querySelector('i');
+        if(receiptIcon && receiptIcon.classList.contains('bi-receipt')) completed++;
+        if(acceptanceIcon && acceptanceIcon.classList.contains('bi-envelope-check')) finalized++;
+    });
+
+    document.getElementById('pendingCount').innerText = pending;
+    document.getElementById('acceptedCount').innerText = accepted;
+    document.getElementById('approvedCount').innerText = approved;
+    document.getElementById('rejectedCount').innerText = rejected;
+    document.getElementById('paymentPendingCount').innerText = paymentPending;
+    document.getElementById('completedCount').innerText = completed;
+    document.getElementById('finalizedCount').innerText = finalized;
+}
+
+updateStatusCounts();
 </script>
 
 </body>
