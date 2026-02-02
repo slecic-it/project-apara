@@ -3,30 +3,58 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Slecic_employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function slecicRegister(){
-        return view("slecic.register");
+    /* SLEC USER REGISTRATION */
+
+    public function createSlecic()
+    {
+        return view('slecic.register');
     }
 
-    public function slecicRegisterConfirm(Request $request)
+    public function sleRegisterConfirm(Request $request)
     {
-        $request->validate([     
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:8',
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect('/login')->with('success', 'Registration successful! Please log in.');
+        return redirect('/login')
+            ->with('success', 'Registration successful! Please log in.');
+    }
+
+    /* BANK REGISTRATION */
+
+    public function createBank()
+    {
+        return view('bank.register');
+    }
+
+    public function bankRegisterConfirm(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
+        ]);
+
+        User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect('/login')
+            ->with('success', 'Bank registration successful! Please log in.');
     }
 }
