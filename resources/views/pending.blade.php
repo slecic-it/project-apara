@@ -7,27 +7,10 @@
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css"/>
 
 <style>
-body{
-    background:#f4f6f9;
-    font-family: Arial, sans-serif;
-}
-.card{
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-table{
-    background:white;
-}
-th{
-    background:#0d6efd;
-    color:white;
-    text-align:center;
-}
-td{
-    text-align:center;
-}
+
 </style>
 </head>
 

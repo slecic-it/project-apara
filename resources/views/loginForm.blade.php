@@ -9,82 +9,11 @@
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css"/>
+
 
     <style>
-        body {
-            height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-        }
-
-        .login-wrapper {
-            height: 100vh;
-        }
-
-        /* LEFT IMAGE PANEL */
-        .left-panel {
-            background: url("{{ asset('assets/images/apara-bg.jpg') }}") no-repeat center center;
-            background-size: cover;
-            position: relative;
-        }
-
-        .left-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(15, 61, 94, 0.65);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-            color: #fff;
-        }
-
-        .left-overlay h1 {
-            font-weight: 700;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .left-overlay p {
-            font-size: 15px;
-            opacity: 0.95;
-        }
-
-        /* RIGHT LOGIN PANEL */
-        .login-card {
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-        }
-
-        .brand-title {
-            font-weight: 700;
-            color: #0f3d5e;
-        }
-
-        .brand-subtitle {
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        .btn-login {
-            background-color: #0f3d5e;
-            color: #fff;
-        }
-
-        .btn-login:hover {
-            background-color: #0b2f49;
-        }
-
-        .footer-text {
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        @media (max-width: 768px) {
-            .left-panel {
-                display: none;
-            }
-        }
+  
     </style>
 </head>
 <body>

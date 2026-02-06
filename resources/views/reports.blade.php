@@ -8,60 +8,10 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css"/>
 
 <style>
-body {
-    background:#ffffff;
-    font-family: "Segoe UI", sans-serif;
-}
 
-/* Page Title */
-.page-title {
-    font-weight:700;
-    font-size:22px;
-    color:#0d6efd;
-    border-bottom:2px solid #f1f1f1;
-    padding-bottom:8px;
-}
-
-/* Cards */
-.card {
-    border: none;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    background:#ffffff;
-}
-
-/* Section Titles */
-.section-title {
-    font-weight:600;
-    font-size:16px;
-    color:#333;
-    margin-bottom:10px;
-    border-left:4px solid #0d6efd;
-    padding-left:8px;
-}
-
-/* Table */
-.table {
-    background:#ffffff;
-    border-radius:10px;
-    overflow:hidden;
-}
-.table th {
-    background:#f8f9fa !important;
-    color:#333;
-    font-weight:600;
-}
-
-/* Buttons */
-.btn-primary {
-    background:#0d6efd;
-    border:none;
-}
-.btn-primary:hover {
-    background:#0b5ed7;
-}
 </style>
 </head>
 

@@ -8,10 +8,10 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css"/>
 
 <style>
-body { background:#f4f6f9; }
-.card { border-radius:12px; }
+
 </style>
 </head>
 
