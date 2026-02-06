@@ -8,164 +8,10 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="css/dashboard.css"/>
 
 <style>
-body{
-    font-family: "Segoe UI", Arial, sans-serif;
-    background:#f5f7fb;
-    margin:0;
-}
 
-/* ================= SIDEBAR ================= */
-.sidebar{
-    width:240px;
-    height:100vh;
-    background:#ffffff;
-    position:fixed;
-    top:0;
-    left:0;
-    border-right:1px solid #ddd;
-    padding-top:15px;
-}
-.sidebar .logo{
-    font-size:20px;
-    font-weight:bold;
-    text-align:center;
-    margin-bottom:20px;
-}
-.sidebar a{
-    display:flex;
-    align-items:center;
-    padding:12px 18px;
-    color:#333;
-    text-decoration:none;
-    font-size:14px;
-}
-.sidebar a:hover, .sidebar a.active{
-    background:#e8f0ff;
-    color:#2563eb;
-}
-.submenu{
-    display:none;
-    flex-direction:column;
-    padding-left:20px;
-}
-.submenu a{
-    font-size:13px;
-    padding:8px 10px;
-}
-
-/* ================= HEADER ================= */
-.header{
-    position:fixed;
-    left:240px;
-    right:0;
-    top:0;
-    height:60px;
-    background:#fff;
-    border-bottom:1px solid #ddd;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 20px;
-    z-index:100;
-}
-
-/* ================= MAIN ================= */
-.main{
-    margin-left:240px;
-    margin-top:70px;
-    padding:20px;
-}
-
-/* ================= STATUS SUMMARY ================= */
-.status-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:15px;
-}
-.status-box{
-    background:#fff;
-    border-radius:10px;
-    padding:15px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.05);
-}
-.status-box h6{
-    font-size:13px;
-    color:#777;
-}
-.status-box h3{
-    font-weight:bold;
-}
-.status-box.pending{border-left:5px solid #facc15;}
-.status-box.accepted{border-left:5px solid #22c55e;}
-.status-box.approved{border-left:5px solid #2563eb;}
-.status-box.rejected{border-left:5px solid #ef4444;}
-.status-box.payment{border-left:5px solid #f97316;}
-.status-box.completed{border-left:5px solid #10b981;}
-.status-box.finalized{border-left:5px solid #8b5cf6;}
-
-/* ================= APPLICATION FLOW ================= */
-.flow-card{
-    background:#fff;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.05);
-}
-.flow-steps{
-    display:flex;
-    flex-wrap:wrap;
-    gap:15px;
-}
-.flow-step{
-    flex:1;
-    min-width:150px;
-    border:1px solid #ddd;
-    border-radius:10px;
-    padding:12px;
-    cursor:pointer;
-    transition:0.2s;
-}
-.flow-step:hover{
-    background:#f8fafc;
-}
-.flow-circle{
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    text-align:center;
-    line-height:30px;
-    font-weight:bold;
-    color:white;
-}
-.completed{background:#22c55e;}
-.current{background:#2563eb;}
-.pending{background:#64748b;}
-.flow-actions{
-    display:none;
-    font-size:13px;
-    margin-top:8px;
-}
-.flow-actions.show{
-    display:block;
-}
-
-/* ================= TABLE ================= */
-.table-card{
-    background:#fff;
-    border-radius:10px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.05);
-}
-
-/* ================= FOOTER ================= */
-footer{
-    margin-left:240px;
-    background:#fff;
-    border-top:1px solid #ddd;
-    text-align:center;
-    padding:10px;
-    font-size:13px;
-}
 </style>
 </head>
 
@@ -210,7 +56,7 @@ footer{
 <!-- ================= MAIN ================= -->
 <div class="main">
 
-<h4>System Dashboard</h4>
+<h4>Dashboard</h4>
 <p class="text-muted">Real-time APARA system monitoring</p>
 
 <!-- ================= STATUS SUMMARY ================= -->

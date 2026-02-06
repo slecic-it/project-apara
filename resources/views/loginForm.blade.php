@@ -111,7 +111,7 @@
             <div class="card login-card p-4 w-75">
 
                 <div class="text-center mb-4">
-                    <h3 class="brand-title">System Login</h3>
+                    <h3 class="brand-title">Login</h3>
                     <div class="brand-subtitle">
                         Enter your credentials to continue
                     </div>
