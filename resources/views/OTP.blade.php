@@ -21,7 +21,7 @@
         <h4 class="mb-2">OTP Verification</h4>
         <p class="text-muted">Enter the 6-digit OTP sent to your email</p>
 
-        <form action="/OTP" method="POST">
+        <form action="/otp-verify" method="POST">
             <!-- Laravel CSRF -->
             <!-- @csrf -->
 

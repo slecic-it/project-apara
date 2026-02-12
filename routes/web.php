@@ -17,7 +17,7 @@ Route::post('/bank-register', [UserController::class, 'bankRegisterConfirm'])->n
 Route::get('/slecic.register', [UserController::class, 'createSlecic'])->name('slecic.register');
 Route::post('/slecic.register', [UserController::class, 'slecicRegisterConfirm'])->name('slecic.register.submit');
 
-Route::post('/otp-verify', [HomeController::class, 'verify'])->name('otp.verify');
+Route::get('/otp', [AuthController::class, 'verify'])->name('otp.verify');
 
 
 Route::middleware('auth')->group(function () {

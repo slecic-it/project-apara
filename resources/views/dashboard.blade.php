@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APARA | Admin Dashboard</title>
+    @include('layouts.header')
 
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
 
-<style>
-
-</style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -21,9 +15,14 @@
 <div class="sidebar">
     <div class="logo">APARA Admin</div>
 
-    <a class="active"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+    <a class="active">
+        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+    </a>
 
-    <a onclick="toggleMenu('appMenu')"><i class="bi bi-folder me-2"></i> Applications <i class="bi bi-chevron-down ms-auto"></i></a>
+    <a onclick="toggleMenu('appMenu')">
+        <i class="bi bi-folder me-2"></i> Applications
+        <i class="bi bi-chevron-down ms-auto"></i>
+    </a>
     <div class="submenu" id="appMenu">
         <a>Pending</a>
         <a>Accepted</a>
@@ -31,14 +30,20 @@
         <a>Rejected</a>
     </div>
 
-    <a onclick="toggleMenu('manageMenu')"><i class="bi bi-gear me-2"></i> Management <i class="bi bi-chevron-down ms-auto"></i></a>
+    <a onclick="toggleMenu('manageMenu')">
+        <i class="bi bi-gear me-2"></i> Management
+        <i class="bi bi-chevron-down ms-auto"></i>
+    </a>
     <div class="submenu" id="manageMenu">
         <a>Banks</a>
         <a>Employees</a>
         <a>Reports</a>
     </div>
 
-    <a onclick="toggleMenu('financeMenu')"><i class="bi bi-cash me-2"></i> Finance <i class="bi bi-chevron-down ms-auto"></i></a>
+    <a onclick="toggleMenu('financeMenu')">
+        <i class="bi bi-cash me-2"></i> Finance
+        <i class="bi bi-chevron-down ms-auto"></i>
+    </a>
     <div class="submenu" id="financeMenu">
         <a>Invoice</a>
         <a>Fee Due</a>
@@ -50,102 +55,28 @@
 <!-- ================= HEADER ================= -->
 <div class="header">
     <div id="datetime"></div>
-    <div><i class="bi bi-bell me-3 text-primary"></i> Admin User</div>
+    <div>
+        <i class="bi bi-bell me-3 text-primary"></i>
+        Admin User
+    </div>
 </div>
 
 <!-- ================= MAIN ================= -->
 <div class="main">
 
-<h4>Dashboard</h4>
-<p class="text-muted">Real-time APARA system monitoring</p>
+    <h4>Dashboard</h4>
 
-<!-- ================= STATUS SUMMARY ================= -->
-<div class="status-grid mb-4">
-    <div class="status-box pending"><h6>Pending</h6><h3 id="pendingCount">0</h3></div>
-    <div class="status-box accepted"><h6>Accepted</h6><h3 id="acceptedCount">0</h3></div>
-    <div class="status-box approved"><h6>Approved</h6><h3 id="approvedCount">0</h3></div>
-    <div class="status-box rejected"><h6>Rejected</h6><h3 id="rejectedCount">0</h3></div>
-    <div class="status-box payment"><h6>Payment Pending</h6><h3 id="paymentPendingCount">0</h3></div>
-    <div class="status-box completed"><h6>Completed Payments</h6><h3 id="completedCount">0</h3></div>
-    <div class="status-box finalized"><h6>Finalized</h6><h3 id="finalizedCount">0</h3></div>
-</div>
+    <div class="d-flex gap-2 mb-3">
+        <a href="#" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> New Application
+        </a>
+    </div>
 
-<!-- ================= APPLICATION FLOW ================= -->
-<div class="flow-card mb-4">
-<h5>Application Workflow</h5>
-<div class="flow-steps">
-
-<div class="flow-step" data-step="submission">
-<div class="flow-circle completed">1</div>
-<b>Submission</b>
-<div class="flow-actions" id="submissionActions">Fill form<br>Upload documents<br>Submit</div>
-</div>
-
-<div class="flow-step" data-step="validation">
-<div class="flow-circle current">2</div>
-<b>Validation</b>
-<div class="flow-actions" id="validationActions">Verify data<br>Check documents</div>
-</div>
-
-<div class="flow-step" data-step="review">
-<div class="flow-circle pending">3</div>
-<b>Review</b>
-<div class="flow-actions" id="reviewActions">Assign reviewer<br>Evaluate</div>
-</div>
-
-<div class="flow-step" data-step="approval">
-<div class="flow-circle pending">4</div>
-<b>Approval</b>
-<div class="flow-actions" id="approvalActions">Approve / Reject</div>
-</div>
-
-<div class="flow-step" data-step="processing">
-<div class="flow-circle pending">5</div>
-<b>Processing</b>
-<div class="flow-actions" id="processingActions">Issue documents</div>
-</div>
-
-<div class="flow-step" data-step="completion">
-<div class="flow-circle pending">6</div>
-<b>Completion</b>
-<div class="flow-actions" id="completionActions">Archive & Close</div>
-</div>
-
-</div>
-</div>
-
-<!-- ================= APPLICATION TABLE ================= -->
-<div class="table-card p-3">
-<h5>Applications List</h5>
-
-<table class="table table-hover mt-2">
-<thead class="table-light">
-<tr>
-<th>App No</th>
-<th>Proposal</th>
-<th>Name</th>
-<th>ID</th>
-<th>Status</th>
-<th>Actions</th>
-</tr>
-</thead>
-<tbody id="applicationTable">
-<tr>
-<td>APP-0012</td>
-<td>PR-556</td>
-<td>ABC Exports</td>
-<td>902134567V</td>
-<td><span class="badge bg-warning">Pending</span></td>
-<td>
-<i class="bi bi-eye me-2"></i>
-<i class="bi bi-pencil-square me-2"></i>
-<i class="bi bi-credit-card"></i>
-</td>
-</tr>
-</tbody>
-</table>
-
-</div>
+    <!-- ================= WORKFLOW LINE CHART ================= -->
+    <div class="chart-card mb-4">
+        <h5>Application Workflow (System Flow View)</h5>
+        <canvas id="workflowChart"></canvas>
+    </div>
 
 </div>
 
@@ -154,33 +85,50 @@
 © 2025 Sri Lanka Export Credit Insurance Corporation | APARA System
 </footer>
 
-<script>
-// Sidebar menu
+<!-- ================= SCRIPT ================= -->
+<script> 
 function toggleMenu(id){
-    let m=document.getElementById(id);
-    m.style.display=(m.style.display==="flex")?"none":"flex";
+    let menu = document.getElementById(id);
+    menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
 }
 
-// Date & Time
-function updateDateTime(){
-    document.getElementById("datetime").innerText=new Date().toLocaleString();
-}
-setInterval(updateDateTime,1000); updateDateTime();
+/* ===== Workflow Line Chart ===== */
+const ctx = document.getElementById('workflowChart');
 
-// Flow click
-document.querySelectorAll(".flow-step").forEach(step=>{
-    step.onclick=()=>{
-        document.querySelectorAll(".flow-actions").forEach(a=>a.classList.remove("show"));
-        document.getElementById(step.dataset.step+"Actions").classList.add("show");
-    };
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+            "Application Fill(Branch)",
+            "Blacklist Check",
+            "Head office Approve",
+            "Marketing Review",
+            "Approve/Reject",
+            "Finance check",
+            "Payment Verify",
+            "Invoice Generate",
+            "Receipt Issue",
+            "Operation Approval",
+            "Loan Settle"
+        ],
+        datasets: [{
+            label: "Application Workflow",
+            data: [1,2,3,4,5,6,7,8,9,10,11],
+            borderWidth: 3,
+            tension: 0.3,
+            fill: false
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true, 
+                ticks: { stepSize: 1 }
+            }
+        }
+    }
 });
-
-// Status count demo
-function updateStatusCounts(){
-    let rows=document.querySelectorAll("#applicationTable tr");
-    document.getElementById("pendingCount").innerText=rows.length;
-}
-updateStatusCounts();
 </script>
 
 </body>

@@ -54,4 +54,14 @@ class AuthController extends Controller
 
     // Optional
     public function verifyEmail($token) {}
+
+
+    //OTP 
+    public function verifyotp($token){
+          if (Auth::attempt()) {
+            // Authentication passed...
+            return view('otp');
+        }
+    }  
 }
+

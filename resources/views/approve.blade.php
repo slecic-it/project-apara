@@ -18,7 +18,7 @@
 
 <div class="container mt-4">
 
-<h3 class="mb-3"> APARA Application Approval Panel</h3>
+<h3 class="mb-3">   Approval Applications</h3>
 
 <!-- 🔍 Filter Section -->
 <div class="card p-3 mb-3">
