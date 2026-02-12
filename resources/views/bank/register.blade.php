@@ -7,91 +7,10 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css"/>
 
     <style>
-        body {
-            background: linear-gradient(135deg, #eef2ff, #f8fafc);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        }
 
-        .card {
-            border-radius: 14px;
-            border: none;
-            background-color: #ffffff;
-        }
-
-        .card-title {
-            font-weight: 600;
-            letter-spacing: 0.4px;
-            color: #0f3d5e;
-        }
-
-        .title-divider {
-            width: 60px;
-            height: 3px;
-            background-color: #0f3d5e;
-            margin: 10px auto 25px;
-            border-radius: 2px;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: #0f3d5e;
-            font-size: 14px;
-        }
-
-        .form-control {
-            border-radius: 8px;
-            padding: 11px 12px;
-            border: 1px solid #d1d5db;
-            font-size: 14px;
-        }
-
-        .form-control::placeholder {
-            color: #9ca3af;
-        }
-
-        .form-control:focus {
-            border-color: #0f3d5e;
-            box-shadow: 0 0 0 0.15rem rgba(15, 61, 94, 0.25);
-        }
-
-        .btn-primary {
-            border-radius: 10px;
-            padding: 11px;
-            font-weight: 600;
-            font-size: 15px;
-            background-color: #0f3d5e;
-            border: none;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .btn-primary:hover {
-            background-color: #0c2f48;
-            transform: translateY(-1px);
-        }
-
-        .card-footer {
-            background-color: transparent;
-            border-top: 1px solid #e5e7eb;
-            font-size: 14px;
-            padding: 16px;
-        }
-
-        .card-footer a {
-            font-weight: 600;
-            text-decoration: none;
-            color: #0f3d5e;
-        }
-
-        .footer-text {
-            font-size: 13px;
-            color: #6b7280;
-        }
     </style>
 </head>
 <body>

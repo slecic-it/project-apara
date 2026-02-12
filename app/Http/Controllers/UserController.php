@@ -32,7 +32,7 @@ class UserController extends Controller
         return redirect('/login')
             ->with('success', 'Registration successful! Please log in.');
     }
-
+    
     /* BANK REGISTRATION */
 
     public function createBank()
