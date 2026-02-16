@@ -11,9 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('countries', function (Blueprint $table) {
-            $table->id();
+        Schema::create('slecic_employees', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('name');
+            $table->integer('emp_no');
+            $table->integer('user_id');
+            $table->integer('desig_id');
+            $table->integer('dep_id');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -23,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('slecic_employees');
     }
 };

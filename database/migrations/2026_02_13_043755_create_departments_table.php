@@ -11,24 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('districts', function (Blueprint $table) {
-            $table->id();
+        Schema::create('departments', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->string('name');
-            $table->unsignedBigInteger('province_id');
             $table->timestamps();
-
-            //Foreign Key
-            $table->foreign('province_id')->references('id')->on('provinces')->onDelete('cascade');
         });
     }
 
-    /** 
+    /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('districts');
+        Schema::dropIfExists('departments');
     }
 };
-
-
