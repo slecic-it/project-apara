@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Slecic_employee;
+use App\Models\Bank_employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
-use App\Models\User;
 
 class AuthController extends Controller
 {   
@@ -28,7 +29,15 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             // Authentication passed...
-            return view('dashboard');
+            $user = User::where('email', $email)->first();
+            if ($user->type == 0) {
+                $employee = Slecic_employee::where('user_id', $user->id)->first();
+                return view('slecic.dashboard', compact('employee'));
+
+            }elseif ($user->type == 1) {
+                $employee = Bank_employee::where('user_id', $user->id)->first();
+                return view('bank.dashboard', compact('employee'));
+            }
         }
         
         return back()->withErrors([
