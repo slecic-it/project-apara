@@ -24,6 +24,7 @@ Route::get('/', function () {
 
 Route::get('/bank-register', [UserController::class, 'createBank'])->name('bank.register');
 Route::post('/bank-register', [UserController::class, 'bankRegisterConfirm'])->name('bank.register.submit');
+Route::get('/dashboard', [HomeController::class, 'dashboard']);
 
 Route::get('/slecic.register', [UserController::class, 'createSlecic'])->name('slecic.register');
 Route::post('/slecic.register', [UserController::class, 'slecicRegisterConfirm'])->name('slecic.register.submit');

@@ -10,4 +10,9 @@ class HomeController extends Controller
     {
         return redirect()->route('login.form');
     }
+    public function dashboard()
+    {
+        $employee = session('employee');
+        return view('slecic.dashboard', compact('employee'));
+    }
 }

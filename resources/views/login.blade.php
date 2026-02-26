@@ -1,5 +1,5 @@
 @include('layouts.header')
-
+</head>
 <body>
 
 <div class="container-fluid login-wrapper">

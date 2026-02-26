@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>APARA | Admin Dashboard</title>
-
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
-
-<style>
-
-</style>
+@include('layouts.header');
 </head>
-
 <body>
 
 <!-- ================= SIDEBAR ================= -->
 <div class="sidebar">
-    <div class="logo">{{ $employee->name }}</div>
+    <div class="logo">{{ $employee['name'] }}</div>
 
     <a class="active"><i class="bi bi-speedometer2 me-2"></i> Dashboard </a>
 
@@ -151,9 +136,6 @@
 
 <!-- ================= FOOTER ================= -->
 <footer>
-© 2025 Sri Lanka Export Credit Insurance Corporation | APARA System
-</footer>
-
 <script>
 // Sidebar menu
 function toggleMenu(id){
@@ -184,4 +166,4 @@ updateStatusCounts();
 </script>
 
 </body>
-</html>
+@include('layouts.footer');

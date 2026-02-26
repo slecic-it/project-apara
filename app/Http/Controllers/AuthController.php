@@ -32,10 +32,12 @@ class AuthController extends Controller
             $user = User::where('email', $email)->first();
             if ($user->type == 0) {
                 $employee = Slecic_employee::where('user_id', $user->id)->first();
-                return view('slecic.dashboard', compact('employee'));
+                session(['employee' => $employee]);
+                return redirect()->route('dashboard');    
 
             }elseif ($user->type == 1) {
                 $employee = Bank_employee::where('user_id', $user->id)->first();
+                session(['employee' => $employee]);
                 return view('bank.dashboard', compact('employee'));
             }
         }
