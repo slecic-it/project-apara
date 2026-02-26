@@ -10,7 +10,7 @@
 <link href="vendor/bootstrap-icons-1.13.1/bootstrap-icons.css" rel="stylesheet">
 
 <!-- Common custom styles -->
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="css/styles.css"/>
 
 <style>
 
