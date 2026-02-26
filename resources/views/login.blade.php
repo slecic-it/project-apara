@@ -9,8 +9,8 @@
         <div class="col-md-7 d-none d-md-block left-panel">
             <div class="left-overlay">
                 <div>
-                    <h1>SLECIC</h1>
-                    <p>APARA Guarantee Management System</p>
+                    <img src="{{ asset('images/logo-01.png') }}" alt="Logo" class="mb-3" style="width: 400px;">
+                    <p></p>
                     <p class="mt-3 small">
                         
                     </p>
