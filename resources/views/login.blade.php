@@ -12,7 +12,7 @@
                     <h1>SLECIC</h1>
                     <p>APARA Guarantee Management System</p>
                     <p class="mt-3 small">
-                        Secure • Reliable • Government Approved
+                        
                     </p>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                 <div class="text-center mb-4">
                     <h3 class="brand-title">Login</h3>
                     <div class="brand-subtitle">
-                        Enter your credentials to continue
+                        
                     </div>
                 </div>
 
@@ -72,7 +72,7 @@
                     <!-- Login Button -->
                     <div class="d-grid mt-3">
                         <button type="submit" class="btn btn-login">
-                            <i class="fa fa-sign-in-alt me-1"></i> Login
+                            <i class="fa fa-sign-in-alt me-1"></i> Next
                         </button>
                     </div>
 
@@ -80,9 +80,9 @@
 
                 <hr>
 
-                <div class="text-center footer-text">
+                <div class="text-center footer-text brand-subtitle">
                     © {{ date('Y') }} Sri Lanka Export Credit Insurance Corporation  
-                    <br> APARA System
+                    <br>
                 </div>
 
             </div>
