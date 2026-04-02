@@ -15,6 +15,11 @@ class UserController extends Controller
         return view('slecic.register');
     }
 
+    public function slecicRegister()
+    {
+        return $this->createSlecic();
+    }
+
     public function sleRegisterConfirm(Request $request)
     {
         $request->validate([
@@ -31,6 +36,11 @@ class UserController extends Controller
 
         return redirect('/login')
             ->with('success', 'Registration successful! Please log in.');
+    }
+
+    public function slecicRegisterConfirm(Request $request)
+    {
+        return $this->sleRegisterConfirm($request);
     }
     
     /* BANK REGISTRATION */

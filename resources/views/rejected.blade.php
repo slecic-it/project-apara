@@ -7,31 +7,39 @@
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 
-<style>
-
-</style>
 </head>
 
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container mt-4">
+<div class="main with-sidebar">
+<div class="page-shell">
 
-    <h3 class="mb-3"> Rejected Applications</h3>
+    <div class="page-header">
+        <div class="page-header-content">
+            <h3 class="page-heading">Rejected Applications</h3>
+            <p class="page-subtitle">Rejected records now use the same shared page structure without changing the data shown.</p>
+        </div>
+    </div>
 
     <!-- Search & Filter Section -->
-    <div class="card p-3 mb-3">
+    <div class="card filter-card mb-3">
         <div class="row g-2">
             <div class="col-md-3">
+                <label class="card-label">ID Number</label>
                 <input type="text" id="searchID" class="form-control" placeholder="Search by ID Number">
             </div>
 
             <div class="col-md-3">
+                <label class="card-label">From Date</label>
                 <input type="date" id="fromDate" class="form-control">
             </div>
 
             <div class="col-md-3">
+                <label class="card-label">To Date</label>
                 <input type="date" id="toDate" class="form-control">
             </div>
 
@@ -42,7 +50,11 @@
     </div>
 
     <!-- Table -->
-    <div class="card p-3">
+    <div class="card data-card">
+        <div class="table-title-row">
+            <h5>Rejected Application Records</h5>
+            <span class="table-meta">Existing details stay exactly the same.</span>
+        </div>
         <table class="table table-bordered table-hover" id="appTable">
             <thead>
                 <tr>
@@ -95,6 +107,7 @@
         </table>
     </div>
 
+</div>
 </div>
 
 <script>

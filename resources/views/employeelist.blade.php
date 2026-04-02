@@ -8,28 +8,35 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 
-<style>
-
-</style>
 </head>
 
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container mt-4">
+<div class="main with-sidebar">
+<div class="page-shell">
 
 <!-- Header -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3> Employee List</h3>
+<div class="page-header">
+    <div class="page-header-content">
+    <h3 class="page-heading">Employee List</h3>
+    <p class="page-subtitle">Employee management now follows the same page design as the other sidebar sections.</p>
+    </div>
+    <div class="page-actions">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
         <i class="bi bi-person-plus"></i> Add Employee
     </button>
+    </div>
 </div>
 
 <!-- Search & Export -->
-<div class="row mb-3">
+<div class="card filter-card mb-3">
+<div class="row mb-0 g-3">
     <div class="col-md-4">
+        <label class="card-label">Employee ID</label>
         <input type="text" id="searchID" class="form-control" placeholder="Search by Employee ID">
     </div>
     <div class="col-md-2">
@@ -38,9 +45,14 @@
         </button>
     </div>
 </div>
+</div>
 
 <!-- Employee Table -->
-<div class="card p-3">
+<div class="card data-card">
+<div class="table-title-row">
+<h5>Employee Records</h5>
+<span class="table-meta">Existing employee details stay exactly the same.</span>
+</div>
 <table class="table table-bordered table-hover" id="employeeTable">
 <thead class="table-dark">
 <tr>
@@ -86,8 +98,19 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+@php
+    $employeeRows = collect($employeelist ?? [])->map(function ($employee) {
+        return [
+            'id' => $employee->employee_id ?? $employee->id ?? '',
+            'name' => $employee->employee_name ?? $employee->name ?? '',
+            'des' => $employee->designation ?? $employee->designation_name ?? '',
+            'dep' => $employee->department ?? $employee->department_name ?? '',
+        ];
+    })->values();
+@endphp
+
 <script>
-let employees = [];
+let employees = @json($employeeRows);
 
 // Add Employee
 function addEmployee() {
@@ -163,6 +186,8 @@ function exportTable() {
     a.download = "employees.csv";
     a.click();
 }
+
+renderTable();
 </script>
 
 </body>

@@ -7,34 +7,40 @@
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 
-<style>
-
-</style>
 </head>
 
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container mt-4">
+<div class="main with-sidebar">
+<div class="page-shell">
 
-    <h3 class="mb-3"> Accepted Applications</h3>
+    <div class="page-header">
+        <div class="page-header-content">
+            <h3 class="page-heading">Accepted Applications</h3>
+            <p class="page-subtitle">Review accepted applications in the same layout style used across the other sidebar sections.</p>
+        </div>
+    </div>
 
     <!-- Filters -->
-    <div class="card p-3 mb-4">
+    <div class="card filter-card mb-4">
         <div class="row g-2">
 
             <div class="col-md-3">
+                <label class="card-label">ID Number</label>
                 <input type="text" id="searchID" class="form-control" placeholder="Search by ID Number">
             </div>
 
             <div class="col-md-3">
-                <label>From Date</label>
+                <label class="card-label">From Date</label>
                 <input type="date" id="fromDate" class="form-control">
             </div>
 
             <div class="col-md-3">
-                <label>To Date</label>
+                <label class="card-label">To Date</label>
                 <input type="date" id="toDate" class="form-control">
             </div>
 
@@ -47,7 +53,11 @@
 
 
     <!-- Applications Table -->
-    <div class="card p-3">
+    <div class="card data-card">
+        <div class="table-title-row">
+            <h5>Accepted Application Records</h5>
+            <span class="table-meta">Existing details stay exactly the same.</span>
+        </div>
         <table class="table table-bordered table-striped" id="appTable">
             <thead class="table-dark">
                 <tr>
@@ -69,6 +79,7 @@
         </table>
     </div>
 
+</div>
 </div>
 
 <script>

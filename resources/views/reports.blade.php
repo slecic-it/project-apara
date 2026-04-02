@@ -8,21 +8,26 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 
-<style>
-
-</style>
 </head>
 
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container mt-4">
+<div class="main with-sidebar">
+<div class="page-shell">
 
-<h3 class="page-title mb-4"> Reports Dashboard</h3>
+<div class="page-header">
+<div class="page-header-content">
+<h3 class="page-heading">Reports Dashboard</h3>
+<p class="page-subtitle">Management reports now share the same visual structure as the Application and Finance sections.</p>
+</div>
+</div>
 
 <!-- ================= ADVANCED RECORD FILTER ================= -->
-<div class="card p-4 mb-4">
+<div class="card filter-card p-4 mb-4">
 <div class="section-title">Advanced Record Filtering</div>
 
 <div class="row g-3 mt-2">
@@ -60,9 +65,10 @@
     </div>
 </div>
 </div>
+</div>
 
 <!-- ================= EMPLOYEE ACTIVITY REPORT ================= -->
-<div class="card p-4 mb-4">
+<div class="card data-card p-4 mb-4">
 <div class="section-title">Employee Activity Reports</div>
 
 <div class="row text-center mt-2">
@@ -90,7 +96,7 @@
 </div>
 
 <!-- ================= PROCESSING TIME REPORT ================= -->
-<div class="card p-4 mb-4">
+<div class="card data-card p-4 mb-4">
 <div class="section-title">Processing Time and Involved Employee</div>
 
 <div class="row g-3 mt-2">

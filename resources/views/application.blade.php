@@ -6,17 +6,33 @@
         <title>New Application</title>
         <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"/>
         <link rel="stylesheet" href="icons/font/bootstrap-icons.min.css"/>
+        <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="shortcut icon" href="Images/logo.png" />        
     </head>
 
     <body>
+        @include('layouts.sidebar')
+        @include('layouts.header')
+
+        <div class="main with-sidebar">
         <div class="main-content" style="padding-bottom: 100px;">
             <div class="container">
 
 
-            <form action="" method="POST" target="_self" id="newApplication" enctype="multipart/form-data">
+            <form action="{{ route('application.store') }}" method="POST" target="_self" id="newApplication" enctype="multipart/form-data">
+                @csrf
                 <div class="container mt-5">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="heading-container">
                         <h3>New Application</h3>
                         <hr class="hr-custom">
@@ -25,10 +41,31 @@
                         <div class="col-12 col-md-8 col-lg-10 p-4 rounded custom-shadow border-container ms-3">
                             <div class="row g-4">
                                 <div class="w-100">
+                                    <label for="selectedBankName" class="form-label">Select Bank<span style="color: red">*</span></label>
+                                    <select name="selected_bank_name" id="selectedBankName" class="form-control mb-3 bg-light" required>
+                                        <option value="">-- Select Bank --</option>
+                                        @foreach(collect($banks)->map(fn ($bank) => $bank->bank_name ?? $bank->name ?? null)->filter()->unique()->values() as $bankName)
+                                            <option value="{{ $bankName }}">{{ $bankName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="w-100">
                                     <label for="forBranchBankId" class="form-label">Select Branch (For Which Application Is Submitted)<span style="color: red">*</span></label>
                                     <select name="for_branch_bank_id" id="forBranchBankId" class="form-control mb-3 bg-light" required>
-                                        <option value="">-- Select Branch --</option>
-                                        
+                                        <option value="">-- Select Bank First --</option>
+                                        @foreach($banks as $bank)
+                                            @php
+                                                $bankId = $bank->id ?? '';
+                                                $branchName = $bank->branch_name ?? $bank->branch ?? $bank->name ?? $bank->bank_name ?? 'Bank Branch';
+                                                $bankName = $bank->bank_name ?? $bank->name ?? '';
+                                            @endphp
+                                            <option value="{{ $bankId }}" data-bank-name="{{ $bankName }}" style="display:none;">
+                                                {{ $branchName }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -336,7 +373,7 @@
                 <div class="container mt-4">
                     <div class="text-start">
                         <button onclick='return confirm("Are you sure you want to submit this application?")' type="Submit" class="btn btn-common" id="addApplication" name="addApplication" value="Submit"><i class="bi bi-save icon-spacing"></i>Submit</button>
-                        <a href="bankDashboard.php" class="btn btn-common" onclick="return confirm('Are you sure you want to cancel this application?')">
+                        <a href="{{ route('bank.dashboard') }}" class="btn btn-common" onclick="return confirm('Are you sure you want to cancel this application?')">
                             <i class="bi bi-x-circle icon-spacing"></i> Cancel
                         </a>
                     </div>
@@ -355,8 +392,43 @@
         
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    const bankSelect = document.getElementById('selectedBankName');
+    const branchSelect = document.getElementById('forBranchBankId');
     const provinceSelect = document.getElementById('inputProvince');
     const districtSelect = document.getElementById('inputDistrict');
+
+    function updateBranchOptions() {
+        if (!bankSelect || !branchSelect) {
+            return;
+        }
+
+        const selectedBank = bankSelect.value;
+        const branchOptions = Array.from(branchSelect.querySelectorAll('option[data-bank-name]'));
+        let visibleCount = 0;
+
+        branchSelect.value = '';
+
+        branchOptions.forEach(option => {
+            const shouldShow = selectedBank !== '' && option.dataset.bankName === selectedBank;
+            option.style.display = shouldShow ? '' : 'none';
+
+            if (shouldShow) {
+                visibleCount++;
+            }
+        });
+
+        const placeholder = branchSelect.querySelector('option[value=""]');
+        if (placeholder) {
+            placeholder.textContent = selectedBank === ''
+                ? '-- Select Bank First --'
+                : (visibleCount > 0 ? '-- Select Branch --' : '-- No Branches Available --');
+        }
+    }
+
+    if (bankSelect) {
+        bankSelect.addEventListener('change', updateBranchOptions);
+        updateBranchOptions();
+    }
 
     provinceSelect.addEventListener('change', function () {
         const provinceId = this.value;
@@ -384,6 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
         
+        </div>
+        </div>
     </body>
 </html>
-

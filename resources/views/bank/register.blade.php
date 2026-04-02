@@ -7,14 +7,14 @@
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"/>
-
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 </head>
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
+<div class="main with-sidebar">
+<div class="page-shell">
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-7">
@@ -79,6 +79,8 @@
             </p>
         </div>
     </div>
+</div>
+</div>
 </div>
 
 </body>

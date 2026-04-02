@@ -8,28 +8,43 @@
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}"/>
 
-<style>
-
-</style>
 </head>
 
-<body class="p-4">
+<body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container-fluid">
+<div class="main with-sidebar">
+<div class="page-shell">
+
+@if(session('success'))
+<div class="alert alert-success mb-3">{{ session('success') }}</div>
+@endif
+
+@if($errors->any())
+<div class="alert alert-danger mb-3">{{ $errors->first() }}</div>
+@endif
 
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-3">
-<h4><i class="bi bi-bank"></i> Banks</h4>
+<div class="page-header">
+<div class="page-header-content">
+<h4 class="page-heading"><i class="bi bi-bank me-2"></i>Banks</h4>
+<p class="page-subtitle">Manage bank and branch records with the same consistent layout used across the system.</p>
+</div>
+<div class="page-actions">
 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBankModal">
 <i class="bi bi-plus-circle"></i> Add Bank
 </button>
 </div>
+</div>
 
 <!-- Search & Export -->
-<div class="row mb-3">
+<div class="card filter-card mb-3">
+<div class="row mb-0 g-3">
 <div class="col-md-4">
+<label class="card-label">Branch Name</label>
 <input type="text" id="searchBranch" class="form-control" placeholder="Search by Branch Name">
 </div>
 <div class="col-md-8 text-end">
@@ -38,9 +53,14 @@
 </button>
 </div>
 </div>
+</div>
 
 <!-- Banks Table -->
-<div class="card p-3">
+<div class="card data-card">
+<div class="table-title-row">
+<h5>Bank Directory</h5>
+<span class="table-meta">Existing bank details stay exactly the same.</span>
+</div>
 <div class="table-responsive">
 <table class="table table-bordered table-hover" id="banksTable">
 <thead class="table-dark">
@@ -67,31 +87,33 @@
 <div class="modal fade" id="addBankModal">
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
+<form method="POST" action="{{ route('banks.store') }}">
+@csrf
 <div class="modal-header bg-primary text-white">
 <h5 class="modal-title">Add Bank Details</h5>
-<button class="btn-close" data-bs-dismiss="modal"></button>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 </div>
 
 <div class="modal-body">
 <div class="row g-2">
 <div class="col-md-6">
 <label>Bank Name</label>
-<input type="text" id="bankName" class="form-control">
+<input type="text" id="bankName" name="bank_name" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>Bank Code</label>
-<input type="text" id="bankCode" class="form-control">
+<input type="text" id="bankCode" name="bank_code" class="form-control">
 </div>
 
 <div class="col-md-6">
 <label>Branch Name</label>
-<input type="text" id="branchName" class="form-control">
+<input type="text" id="branchName" name="branch_name" class="form-control" required>
 </div>
 
 <div class="col-md-6">
 <label>Branch Grade</label>
-<select id="branchGrade" class="form-control">
+<select id="branchGrade" name="branch_grade" class="form-control">
 <option>A</option>
 <option>B</option>
 <option>C</option>
@@ -100,7 +122,7 @@
 
 <div class="col-md-6">
 <label>Province</label>
-<select id="province" class="form-control">
+<select id="province" name="province" class="form-control">
 <option>Western</option>
 <option>Central</option>
 <option>Southern</option>
@@ -115,21 +137,21 @@
 
 <div class="col-md-6">
 <label>Email</label>
-<input type="email" id="email" class="form-control">
+<input type="email" id="email" name="email" class="form-control">
 </div>
 
 <div class="col-md-6">
 <label>Tel No</label>
-<input type="text" id="tel" class="form-control">
+<input type="text" id="tel" name="tel" class="form-control">
 </div>
 </div>
 </div>
 
 <div class="modal-footer">
-<button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-<button class="btn btn-success" onclick="addBank()">Save Bank</button>
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+<button type="submit" class="btn btn-success">Save Bank</button>
 </div>
-
+</form>
 </div>
 </div>
 </div>
@@ -138,24 +160,21 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-let banks = [];
+@php
+    $bankRows = collect($banks ?? [])->map(function ($bank) {
+        return [
+            'bankName' => $bank->bank_name ?? $bank->name ?? '',
+            'bankCode' => $bank->bank_code ?? $bank->code ?? '',
+            'branchName' => $bank->branch_name ?? $bank->branch ?? '',
+            'branchGrade' => $bank->branch_grade ?? $bank->grade ?? '',
+            'province' => $bank->province ?? '',
+            'email' => $bank->email ?? '',
+            'tel' => $bank->tel ?? $bank->telephone ?? $bank->contact ?? '',
+        ];
+    })->values();
+@endphp
 
-// Add Bank
-function addBank() {
-let bank = {
-bankName: bankName.value,
-bankCode: bankCode.value,
-branchName: branchName.value,
-branchGrade: branchGrade.value,
-province: province.value,
-email: email.value,
-tel: tel.value
-};
-
-banks.push(bank);
-renderTable();
-document.querySelector("#addBankModal .btn-close").click();
-}
+let banks = @json($bankRows);
 
 // Render Table
 function renderTable() {
@@ -213,6 +232,8 @@ a.href = url;
 a.download = "banks_details.csv";
 a.click();
 }
+
+renderTable();
 </script>
 
 </body>

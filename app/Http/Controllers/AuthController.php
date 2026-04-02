@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+  
 use App\Models\User;
 use App\Models\Slecic_employee;
 use App\Models\Bank_employee;
@@ -17,7 +17,7 @@ class AuthController extends Controller
     }
     public function showRegisterForm() {}
 
-    // Actions
+    // Actions 
     public function login(Request $request) {
         $email = $request->input('email');
         $password = $request->input('password');
@@ -34,11 +34,11 @@ class AuthController extends Controller
                 $employee = Slecic_employee::where('user_id', $user->id)->first();
                 session(['employee' => $employee]);
                 return redirect()->route('dashboard');    
-
+            
             }elseif ($user->type == 1) {
                 $employee = Bank_employee::where('user_id', $user->id)->first();
                 session(['employee' => $employee]);
-                return view('bank.dashboard', compact('employee'));
+                return redirect()->route('bank.dashboard');
             }
         }
         
@@ -55,7 +55,13 @@ class AuthController extends Controller
 
         return redirect()->route('login.form');    
     }
-    public function logout() {}
+    public function logout(Request $request) {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login.form');
+    }
 
     // Password
     public function showForgotPasswordForm() {}

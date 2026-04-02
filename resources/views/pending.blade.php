@@ -3,150 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pending Applications</title>
+<title>APARA | Pending Applications</title>
 
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css"/>
 
-<style>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
 
-</style>
 </head>
 
 <body>
+@include('layouts.sidebar')
+@include('layouts.header')
 
-<div class="container mt-4">
+<div class="main with-sidebar">
+<div class="page-shell">
 
-<h3 class="mb-3">📌 Pending Applications</h3>
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+        <h4 class="page-heading">
+            <i class="bi bi-hourglass-split text-warning me-2"></i>
+            Pending Applications
+        </h4>
+        <p class="page-subtitle">Monitor pending applications using the same design language as the other Application, Management, and Finance pages.</p>
+        </div>
+    </div>
 
-<!-- Filter Section -->
-<div class="card p-3 mb-3">
-<div class="row g-2">
+    <!-- Filter Section -->
+    <div class="card filter-card p-4 mb-4">
+        <div class="row g-3">
 
-<div class="col-md-3">
-<label>ID Number</label>
-<input type="text" id="searchID" class="form-control" placeholder="Enter ID No">
-</div>
+            <div class="col-md-4">
+                <label class="card-label">Search by ID Number</label>
+                <input type="text" id="searchID" class="form-control" placeholder="Enter ID No">
+            </div>
 
-<div class="col-md-3">
-<label>From Date</label>
-<input type="date" id="fromDate" class="form-control">
-</div>
+            <div class="col-md-3">
+                <label class="card-label">From Date</label>
+                <input type="date" id="fromDate" class="form-control">
+            </div>
 
-<div class="col-md-3">
-<label>To Date</label>
-<input type="date" id="toDate" class="form-control">
-</div>
+            <div class="col-md-3">
+                <label class="card-label">To Date</label>
+                <input type="date" id="toDate" class="form-control">
+            </div>
 
-<div class="col-md-3 d-flex align-items-end">
-<button class="btn btn-primary w-100" onclick="filterTable()">Search</button>
-</div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button class="btn btn-primary w-100" onclick="filterTable()">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
 
-</div>
-</div>
+        </div>
+    </div>
 
+    <!-- Table Section -->
+    <div class="data-card table-container">
+        <div class="table-title-row">
+            <h5>Pending Application Records</h5>
+            <span class="table-meta">Existing details stay exactly the same.</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="appTable">
 
-<!-- Pending Applications Table -->
-<div class="card p-3">
-<div class="table-responsive">
-<table class="table table-bordered table-hover" id="appTable">
-<thead>
-<tr>
-<th>Application No</th>
-<th>Proposal No</th>
-<th>Customer Name</th>
-<th>ID No</th>
-<th>Country</th>
-<th>Passport</th>
-<th>TAQ</th>
-<th>RL</th>
-<th>RAL</th>
-<th>SLBFE Letter</th>
-<th>Date</th>
-<th>Action</th>
-</tr>
-</thead>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>ID Number</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-<tbody>
-<tr>
-<td>APP001</td>
-<td>PRO001</td>
-<td>Kavisha Nimethmi</td>
-<td>200012345678</td>
-<td>UAE</td>
-<td>N1234567</td>
-<td>Yes</td>
-<td>No</td>
-<td>No</td>
-<td>Yes</td>
-<td>2026-02-01</td>
-<td>
-<button class="btn btn-success btn-sm">View</button>
-<button class="btn btn-danger btn-sm">Reject</button>
-</td>
-</tr>
+                <tbody>
 
-<tr>
-<td>APP002</td>
-<td>PRO002</td>
-<td>John Silva</td>
-<td>199845612345</td>
-<td>Qatar</td>
-<td>N9876543</td>
-<td>No</td>
-<td>Yes</td>
-<td>No</td>
-<td>No</td>
-<td>2026-01-25</td>
-<td>
-<button class="btn btn-success btn-sm">View</button>
-<button class="btn btn-danger btn-sm">Reject</button>
-</td>
-</tr>
+                @foreach($applications as $app)
+                <tr>
+                    <td>{{ $app->id }}</td>
+                    <td>{{ $app->name }}</td>
+                    <td>{{ $app->id_number }}</td>
+                    <td>{{ \Carbon\Carbon::parse($app->created_at)->format('Y-m-d') }}</td>
+                    <td>
+                        <span class="badge badge-pending">
+                            <i class="bi bi-hourglass me-1"></i> Pending
+                        </span>
+                    </td>
+                </tr>
+                @endforeach
 
-</tbody>
-</table>
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
 </div>
 </div>
 
-</div>
-
-
-<!-- JavaScript Filter -->
+<!-- JavaScript -->
 <script>
+
 function filterTable() {
 
-    let idInput = document.getElementById("searchID").value.toUpperCase();
+    let idInput = document.getElementById("searchID").value.toLowerCase();
     let fromDate = document.getElementById("fromDate").value;
     let toDate = document.getElementById("toDate").value;
 
-    let table = document.getElementById("appTable");
-    let rows = table.getElementsByTagName("tr");
+    let rows = document.querySelectorAll("#appTable tbody tr");
 
-    for (let i = 1; i < rows.length; i++) {
-        let idCell = rows[i].getElementsByTagName("td")[3];
-        let dateCell = rows[i].getElementsByTagName("td")[10];
+    rows.forEach(row => {
 
-        if (!idCell || !dateCell) continue;
-
-        let idText = idCell.textContent || idCell.innerText;
-        let rowDate = dateCell.textContent;
+        let idNumber = row.cells[2].innerText.toLowerCase();
+        let rowDate = row.cells[3].innerText;
 
         let show = true;
 
-        // ID Filter
-        if (idInput && !idText.includes(idInput)) {
-            show = false;
-        }
-
-        // Date Filter
+        if (idInput && !idNumber.includes(idInput)) show = false;
         if (fromDate && rowDate < fromDate) show = false;
         if (toDate && rowDate > toDate) show = false;
 
-        rows[i].style.display = show ? "" : "none";
-    }
+        row.style.display = show ? "" : "none";
+
+    });
 }
+
 </script>
 
 </body>
