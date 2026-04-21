@@ -5,9 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class HomeController extends Controller
 {
+    private function resolveContextView(string $defaultView): string
+    {
+        $routeName = request()->route()?->getName() ?? '';
+        $bankView = 'bank.' . $defaultView;
+
+        if (str_starts_with($routeName, 'bank.') && view()->exists($bankView)) {
+            return $bankView;
+        }
+
+        return $defaultView;
+    }
+
     public function index()
     {
         return redirect()->route('login.form');
@@ -15,12 +29,136 @@ class HomeController extends Controller
     public function dashboard()
     {
         $employee = session('employee');
-        $dashboardCounts = [
-            'pending' => DB::table('applications')->where('status', 'pending')->count(),
-            'accepted' => DB::table('applications')->where('status', 'accepted')->count(),
-            'approved' => DB::table('applications')->where('status', 'approved')->count(),
-            'rejected' => DB::table('applications')->where('status', 'rejected')->count(),
-        ];
+        $hasBanksTable = Schema::hasTable('banks');
+        $hasBranchesTable = Schema::hasTable('branches');
+        $hasBankEmployeesTable = Schema::hasTable('bank_employees');
+        $hasApplicationsTable = Schema::hasTable('applications');
+        $hasCountriesTable = Schema::hasTable('countries');
+
+        $bankDirectory = $hasBanksTable ? DB::table('banks')->get() : collect();
+        $applications = collect();
+
+        if ($hasApplicationsTable) {
+            $applicationQuery = DB::table('applications');
+
+            if ($hasCountriesTable) {
+                $applicationQuery->leftJoin('countries', 'applications.country_id', '=', 'countries.id');
+            }
+
+            $applicationSelects = [
+                'applications.id',
+                'applications.proposal_no',
+                'applications.full_name',
+                'applications.nic',
+                'applications.passport_no',
+                'applications.employment_type',
+                'applications.recruitment_agency_name',
+                'applications.status',
+                'applications.created_at',
+                DB::raw($hasCountriesTable ? 'countries.name as country_name' : "'' as country_name"),
+            ];
+
+            $hasSubmittingBankJoin = false;
+
+            if (Schema::hasColumn('applications', 'entered_by') && $hasBankEmployeesTable && $hasBranchesTable) {
+                $applicationQuery
+                    ->leftJoin('bank_employees as submitting_bank_employees', 'applications.entered_by', '=', 'submitting_bank_employees.id')
+                    ->leftJoin('branches as submitting_branches', 'submitting_bank_employees.branch_id', '=', 'submitting_branches.id');
+
+                if ($hasBanksTable) {
+                    $applicationQuery->leftJoin('banks as submitting_banks', 'submitting_branches.bank_id', '=', 'submitting_banks.id');
+                    $hasSubmittingBankJoin = true;
+                }
+            }
+
+            if (Schema::hasColumn('applications', 'for_branch_bank_id') && $hasBranchesTable && $hasBanksTable) {
+                $applicationQuery
+                    ->leftJoin('branches', 'applications.for_branch_bank_id', '=', 'branches.id')
+                    ->leftJoin('banks', 'branches.bank_id', '=', 'banks.id');
+
+                $applicationSelects[] = $hasSubmittingBankJoin
+                    ? DB::raw("COALESCE(applications.selected_bank_name, banks.bank_name, banks.name, submitting_banks.name, '') as bank_name")
+                    : DB::raw("COALESCE(applications.selected_bank_name, banks.bank_name, banks.name, '') as bank_name");
+            } elseif (Schema::hasColumn('applications', 'for_branch_bank_id') && $hasBanksTable) {
+                $applicationQuery->leftJoin('banks', 'applications.for_branch_bank_id', '=', 'banks.id');
+
+                $applicationSelects[] = $hasSubmittingBankJoin
+                    ? DB::raw("COALESCE(applications.selected_bank_name, banks.bank_name, banks.name, banks.branch_name, banks.branch, submitting_banks.name, '') as bank_name")
+                    : DB::raw("COALESCE(applications.selected_bank_name, banks.bank_name, banks.name, banks.branch_name, banks.branch, '') as bank_name");
+            } elseif (Schema::hasColumn('applications', 'selected_bank_name')) {
+                $applicationSelects[] = $hasSubmittingBankJoin
+                    ? DB::raw("COALESCE(applications.selected_bank_name, submitting_banks.name, '') as bank_name")
+                    : DB::raw("COALESCE(applications.selected_bank_name, '') as bank_name");
+            } else {
+                $applicationSelects[] = $hasSubmittingBankJoin
+                    ? DB::raw("COALESCE(submitting_banks.name, '') as bank_name")
+                    : DB::raw("'' as bank_name");
+            }
+
+            $applications = $applicationQuery
+                ->select($applicationSelects)
+                ->orderByDesc('applications.created_at')
+                ->orderByDesc('applications.id')
+                ->limit(12)
+                ->get();
+        }
+
+        $applicationBankCounts = $applications
+            ->groupBy(function ($application) {
+                return trim((string) ($application->bank_name ?? ''));
+            })
+            ->filter(fn ($group, $bankName) => $bankName !== '')
+            ->map(function ($group, $bankName) {
+                return [
+                    'name' => $bankName,
+                    'count' => $group->count(),
+                    'icon' => 'bi-bank2',
+                    'logo_url' => null,
+                ];
+            });
+
+        $banks = $bankDirectory
+            ->map(function ($bank) {
+                $bankName = trim((string) ($bank->bank_name ?? $bank->name ?? ''));
+
+                return [
+                    'name' => $bankName,
+                    'logo_url' => $this->resolveBankLogoUrl($bank),
+                ];
+            })
+            ->filter(fn ($bank) => $bank['name'] !== '')
+            ->unique('name')
+            ->values();
+
+        $bankSummaries = $banks
+            ->map(function ($bank) use ($applicationBankCounts) {
+                $summary = $applicationBankCounts->get($bank['name']);
+
+                return [
+                    'name' => $bank['name'],
+                    'count' => $summary['count'] ?? 0,
+                    'icon' => 'bi-bank2',
+                    'logo_url' => $bank['logo_url'],
+                ];
+            })
+            ->sortBy(function ($bank) {
+                return strtolower($bank['name']);
+            })
+            ->values();
+
+        $dashboardCounts = $hasApplicationsTable
+            ? [
+                'pending' => DB::table('applications')->where('status', 'pending')->count(),
+                'accepted' => DB::table('applications')->where('status', 'accepted')->count(),
+                'approved' => DB::table('applications')->where('status', 'approved')->count(),
+                'rejected' => DB::table('applications')->where('status', 'rejected')->count(),
+            ]
+            : [
+                'pending' => 0,
+                'accepted' => 0,
+                'approved' => 0,
+                'rejected' => 0,
+            ];
 
         $workflowDurations = [
             ['stage' => 'Submission', 'hours' => 4, 'owner' => 'Applicant / Bank', 'detail' => 'Average time to prepare and submit the application package.'],
@@ -39,7 +177,72 @@ class HomeController extends Controller
             'financeHours' => collect($workflowDurations)->firstWhere('stage', 'Finance')['hours'] ?? 0,
         ];
 
-        return view('slecic.dashboard', compact('employee', 'dashboardCounts', 'workflowDurations', 'workflowSummary'));
+        return view('slecic.dashboard', compact('employee', 'dashboardCounts', 'workflowDurations', 'workflowSummary', 'applications', 'bankSummaries'));
+    }
+
+    private function resolveBankLogoUrl(object $bank): ?string
+    {
+        foreach (['logo_path', 'logo', 'image', 'icon', 'icon_path'] as $column) {
+            $value = trim((string) data_get($bank, $column, ''));
+
+            if ($value !== '') {
+                return asset(ltrim($value, '/'));
+            }
+        }
+
+        if ($storedLogoPath = $this->findStoredBankLogoPath($bank)) {
+            return asset($storedLogoPath);
+        }
+
+        $bankName = strtoupper(trim((string) ($bank->bank_name ?? $bank->name ?? '')));
+        $bankCode = strtoupper(trim((string) ($bank->bank_code ?? $bank->code ?? $bank->branch_code ?? '')));
+        $bankIdentifier = trim($bankName . ' ' . $bankCode);
+
+        if (str_contains($bankIdentifier, 'DFCC')) {
+            return asset('images/dfcc-logo.jpg');
+        }
+
+        if (str_contains($bankIdentifier, 'LOLC')) {
+            return asset('images/lolc-logo.jpg');
+        }
+
+        if (str_contains($bankIdentifier, 'BOC')) {
+            return asset('images/boc.png');
+        }
+
+        return null;
+    }
+
+    private function findStoredBankLogoPath(object $bank): ?string
+    {
+        $logoDirectory = public_path('images/bank-logos');
+
+        if (!is_dir($logoDirectory)) {
+            return null;
+        }
+
+        $baseName = $this->bankLogoBaseName(
+            (string) ($bank->bank_name ?? $bank->name ?? ''),
+            (string) ($bank->bank_code ?? $bank->code ?? $bank->branch_code ?? '')
+        );
+
+        $matches = glob($logoDirectory . DIRECTORY_SEPARATOR . $baseName . '.*') ?: [];
+
+        if ($matches === []) {
+            return null;
+        }
+
+        return 'images/bank-logos/' . basename($matches[0]);
+    }
+
+    private function bankLogoBaseName(?string $bankName, ?string $bankCode): string
+    {
+        $parts = array_filter([
+            Str::slug((string) $bankName),
+            Str::slug((string) $bankCode),
+        ]);
+
+        return $parts !== [] ? implode('-', $parts) : 'bank-logo';
     }
 
     public function profile()
@@ -100,7 +303,7 @@ class HomeController extends Controller
             'member_since' => optional(data_get($user, 'created_at'))->format('Y-m-d') ?? '-',
         ];
 
-        return view('profile', compact('employee', 'profile'));
+        return view($this->resolveContextView('profile'), compact('employee', 'profile'));
     }
   
 }

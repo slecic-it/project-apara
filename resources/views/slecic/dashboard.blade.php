@@ -129,15 +129,42 @@
 <div class="table-card p-3" id="applicationListSection">
     <div class="section-header mb-3">
         <div>
-            <h5 class="mb-1">Applications List</h5>
-            <p class="text-muted mb-0">Review the latest applications and take action directly from the table.</p>
+            <h5 class="mb-1">Bank Wise Applications</h5>
         </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <span class="table-count-pill">Total: <span id="totalAppCount">3</span> applications</span>
-            <button class="btn btn-primary dashboard-cta" id="newApplicationBtn">
-                <i class="bi bi-plus-lg me-2"></i>New Application
+        <button type="button" class="bank-filter-button active" data-bank-filter="all" onclick="filterApplicationsByBank('all', this)">
+            <i class="bi bi-grid me-2"></i>All Banks
+        </button>
+    </div>
+
+    <div class="bank-filter-list mb-4">
+        @foreach ($bankSummaries as $bank)
+            <button
+                type="button"
+                class="bank-filter-button"
+                data-bank-filter="{{ strtolower($bank['name']) }}"
+                onclick="filterApplicationsByBank(@js($bank['name']), this)"
+            >
+                <span class="bank-filter-icon">
+                    @if (!empty($bank['logo_url']))
+                        <img src="{{ $bank['logo_url'] }}" alt="{{ $bank['name'] }}" class="bank-filter-logo">
+                    @else
+                        <i class="bi {{ $bank['icon'] }}"></i>
+                    @endif
+                </span>
+                <span class="bank-filter-copy">
+                    <strong>{{ $bank['name'] }}</strong>
+                    <small>{{ $bank['count'] }} application{{ $bank['count'] === 1 ? '' : 's' }}</small>
+                </span>
             </button>
+        @endforeach
+    </div>
+
+    <div class="section-header mb-3">
+        <div>
+            <h5 class="mb-1">Applications List</h5>
+            <p class="text-muted mb-0" id="applicationFilterLabel">Review the latest applications and take action directly from the table.</p>
         </div>
+        <span class="table-count-pill">Total: <span id="totalAppCount">{{ $applications->count() }}</span> applications</span>
     </div>
 
     <div class="table-responsive">
@@ -146,6 +173,7 @@
                 <tr>
                     <th>App No</th>
                     <th>Proposal</th>
+                    <th>Bank Name</th>
                     <th>Full Name</th>
                     <th>ID/Passport</th>
                     <th>Country</th>
@@ -158,60 +186,46 @@
                 </tr>
             </thead>
             <tbody id="applicationTable">
-                <tr data-app-id="APP-0012" data-status="Pending">
-                    <td><button type="button" class="application-number-link" onclick="viewApplication(this)" title="View application location">APP-0012</button></td>
-                    <td>PR-556</td>
-                    <td>John Doe</td>
-                    <td>902134567V</td>
-                    <td>Saudi Arabia</td>
-                    <td>Skilled Worker</td>
-                    <td>500,000</td>
-                    <td>100,000</td>
-                    <td>Global Manpower</td>
-                    <td><span class="badge bg-warning">Pending</span></td>
-                    <td class="action-buttons">
-                        <i class="bi bi-eye me-2" onclick="viewApplication(this)" style="cursor:pointer;" title="View"></i>
-                        <i class="bi bi-pencil-square me-2" onclick="openEditModal(this)" style="cursor:pointer;" title="Edit"></i>
-                        <i class="bi bi-credit-card me-2" onclick="processPayment(this)" style="cursor:pointer;" title="Payment"></i>
-                        <i class="bi bi-trash3" onclick="deleteApplication(this)" style="cursor:pointer; color:#dc3545;" title="Delete"></i>
-                    </td>
-                </tr>
-                <tr data-app-id="APP-0015" data-status="Accepted">
-                    <td><button type="button" class="application-number-link" onclick="viewApplication(this)" title="View application location">APP-0015</button></td>
-                    <td>PR-892</td>
-                    <td>Jane Smith</td>
-                    <td>823456789V</td>
-                    <td>UAE</td>
-                    <td>Driver</td>
-                    <td>750,000</td>
-                    <td>150,000</td>
-                    <td>Overseas Recruiters</td>
-                    <td><span class="badge bg-info">Accepted</span></td>
-                    <td class="action-buttons">
-                        <i class="bi bi-eye me-2" onclick="viewApplication(this)" style="cursor:pointer;" title="View"></i>
-                        <i class="bi bi-pencil-square me-2" onclick="openEditModal(this)" style="cursor:pointer;" title="Edit"></i>
-                        <i class="bi bi-credit-card me-2" onclick="processPayment(this)" style="cursor:pointer;" title="Payment"></i>
-                        <i class="bi bi-trash3" onclick="deleteApplication(this)" style="cursor:pointer; color:#dc3545;" title="Delete"></i>
-                    </td>
-                </tr>
-                <tr data-app-id="APP-0021" data-status="Approved">
-                    <td><button type="button" class="application-number-link" onclick="viewApplication(this)" title="View application location">APP-0021</button></td>
-                    <td>PR-124</td>
-                    <td>Robert Johnson</td>
-                    <td>765432198V</td>
-                    <td>Qatar</td>
-                    <td>Engineer</td>
-                    <td>1,200,000</td>
-                    <td>250,000</td>
-                    <td>Tech Recruiters</td>
-                    <td><span class="badge bg-success">Approved</span></td>
-                    <td class="action-buttons">
-                        <i class="bi bi-eye me-2" onclick="viewApplication(this)" style="cursor:pointer;" title="View"></i>
-                        <i class="bi bi-pencil-square me-2" onclick="openEditModal(this)" style="cursor:pointer;" title="Edit"></i>
-                        <i class="bi bi-credit-card me-2" onclick="processPayment(this)" style="cursor:pointer;" title="Payment"></i>
-                        <i class="bi bi-trash3" onclick="deleteApplication(this)" style="cursor:pointer; color:#dc3545;" title="Delete"></i>
-                    </td>
-                </tr>
+                @forelse ($applications as $application)
+                    @php
+                        $status = ucfirst(str_replace('_', ' ', strtolower($application->status ?? 'Pending')));
+                        $statusBadgeClass = match (strtolower($application->status ?? 'pending')) {
+                            'accepted' => 'bg-info',
+                            'approved' => 'bg-success',
+                            'rejected' => 'bg-danger',
+                            'completed', 'finalized' => 'bg-primary',
+                            'payment_pending' => 'bg-secondary',
+                            default => 'bg-warning',
+                        };
+                    @endphp
+                    <tr
+                        data-app-id="APP-{{ str_pad((string) $application->id, 4, '0', STR_PAD_LEFT) }}"
+                        data-status="{{ $status }}"
+                        data-bank-name="{{ strtolower($application->bank_name ?: 'Unassigned') }}"
+                    >
+                        <td><button type="button" class="application-number-link" onclick="viewApplication(this)" title="View application location">APP-{{ str_pad((string) $application->id, 4, '0', STR_PAD_LEFT) }}</button></td>
+                        <td>{{ $application->proposal_no ?? '-' }}</td>
+                        <td>{{ $application->bank_name ?: '-' }}</td>
+                        <td>{{ $application->full_name ?? '-' }}</td>
+                        <td>{{ $application->nic ?: ($application->passport_no ?: '-') }}</td>
+                        <td>{{ $application->country_name ?? '-' }}</td>
+                        <td>{{ $application->employment_type ?? '-' }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>{{ $application->recruitment_agency_name ?? '-' }}</td>
+                        <td><span class="badge {{ $statusBadgeClass }}">{{ $status }}</span></td>
+                        <td class="action-buttons">
+                            <i class="bi bi-eye me-2" onclick="viewApplication(this)" style="cursor:pointer;" title="View"></i>
+                            <i class="bi bi-pencil-square me-2" onclick="openEditModal(this)" style="cursor:pointer;" title="Edit"></i>
+                            <i class="bi bi-credit-card me-2" onclick="processPayment(this)" style="cursor:pointer;" title="Payment"></i>
+                            <i class="bi bi-trash3" onclick="deleteApplication(this)" style="cursor:pointer; color:#dc3545;" title="Delete"></i>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="11" class="text-center text-muted py-4">No applications found.</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
@@ -512,6 +526,12 @@
             </div>
             <div class="col-md-6">
                 <div class="application-detail-item">
+                    <label class="form-label fw-bold text-muted">Bank Name</label>
+                    <p id="viewBank" class="mb-0 fs-6">-</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="application-detail-item">
                     <label class="form-label fw-bold text-muted">Full Name</label>
                     <p id="viewName" class="mb-0 fs-6">-</p>
                 </div>
@@ -667,7 +687,37 @@ document.querySelectorAll(".flow-step").forEach(step => {
 // Update status counts
 function updateStatusCounts() {
     let rows = document.querySelectorAll("#applicationTable tr");
-    document.getElementById("totalAppCount").innerText = rows.length;
+    let visibleRows = Array.from(rows).filter(row => row.style.display !== "none" && row.querySelectorAll("td").length > 1);
+    document.getElementById("totalAppCount").innerText = visibleRows.length;
+}
+
+function filterApplicationsByBank(bankName, button) {
+    const normalizedBank = (bankName || "all").toString().toLowerCase();
+    const rows = document.querySelectorAll("#applicationTable tr");
+    const label = document.getElementById("applicationFilterLabel");
+
+    rows.forEach(row => {
+        if (row.querySelectorAll("td").length <= 1) {
+            return;
+        }
+
+        const rowBank = (row.dataset.bankName || "unassigned").toLowerCase();
+        row.style.display = normalizedBank === "all" || rowBank === normalizedBank ? "" : "none";
+    });
+
+    document.querySelectorAll(".bank-filter-button").forEach(item => item.classList.remove("active"));
+
+    if (button && button.classList.contains("bank-filter-button")) {
+        button.classList.add("active");
+    }
+
+    if (label) {
+        label.innerText = normalizedBank === "all"
+            ? "Review the latest applications and take action directly from the table."
+            : `Displaying applications submitted under ${bankName}.`;
+    }
+
+    updateStatusCounts();
 }
 
 // Generate next App No
@@ -728,6 +778,7 @@ function addApplicationToTable(proposal, fullName, idNumber, countryId, employme
     newRow.innerHTML = `
         <td><button type="button" class="application-number-link" onclick="viewApplication(this)" title="View application location">${escapeHtml(newAppNo)}</button></td>
         <td>${escapeHtml(proposal)}</td>
+        <td>-</td>
         <td>${escapeHtml(fullName)}</td>
         <td>${escapeHtml(idNumber)}</td>
         <td>${escapeHtml(countryName)}</td>
@@ -775,15 +826,15 @@ function scrollToApplicationList(newRow = null) {
 function updateApplication(row, appNo, proposal, fullName, idNumber, country, employmentType, guaranteeAmount, preDepartureAmount, agencyName, status) {
     row.cells[0].innerText = appNo;
     row.cells[1].innerText = proposal;
-    row.cells[2].innerText = fullName;
-    row.cells[3].innerText = idNumber;
-    row.cells[4].innerText = country;
-    row.cells[5].innerText = employmentType;
-    row.cells[6].innerText = formatAmount(guaranteeAmount);
-    row.cells[7].innerText = formatAmount(preDepartureAmount);
-    row.cells[8].innerText = agencyName;
+    row.cells[3].innerText = fullName;
+    row.cells[4].innerText = idNumber;
+    row.cells[5].innerText = country;
+    row.cells[6].innerText = employmentType;
+    row.cells[7].innerText = formatAmount(guaranteeAmount);
+    row.cells[8].innerText = formatAmount(preDepartureAmount);
+    row.cells[9].innerText = agencyName;
     let statusBadgeClass = getStatusBadgeClass(status);
-    row.cells[9].innerHTML = `<span class="badge ${statusBadgeClass}">${status}</span>`;
+    row.cells[10].innerHTML = `<span class="badge ${statusBadgeClass}">${status}</span>`;
     updateStatusCounts();
     showNotification("Application updated successfully!", "success");
 }
@@ -891,7 +942,7 @@ function updateProcessDurationTimeline(appNo, status) {
 
 function viewApplication(element) {
     let row = element.closest("tr");
-    const status = row.cells[9].innerText.trim();
+    const status = row.cells[10].innerText.trim();
     const locationDetails = getApplicationLocationDetails(status);
     const appNo = row.cells[0].innerText.trim();
 
@@ -899,13 +950,14 @@ function viewApplication(element) {
 
     document.getElementById("viewAppNo").innerText = appNo;
     document.getElementById("viewProposal").innerText = row.cells[1].innerText;
-    document.getElementById("viewName").innerText = row.cells[2].innerText;
-    document.getElementById("viewId").innerText = row.cells[3].innerText;
-    document.getElementById("viewCountry").innerText = row.cells[4].innerText;
-    document.getElementById("viewEmploymentType").innerText = row.cells[5].innerText;
-    document.getElementById("viewAmount").innerText = row.cells[6].innerText;
-    document.getElementById("viewPreDeparture").innerText = row.cells[7].innerText;
-    document.getElementById("viewAgency").innerText = row.cells[8].innerText;
+    document.getElementById("viewBank").innerText = row.cells[2].innerText;
+    document.getElementById("viewName").innerText = row.cells[3].innerText;
+    document.getElementById("viewId").innerText = row.cells[4].innerText;
+    document.getElementById("viewCountry").innerText = row.cells[5].innerText;
+    document.getElementById("viewEmploymentType").innerText = row.cells[6].innerText;
+    document.getElementById("viewAmount").innerText = row.cells[7].innerText;
+    document.getElementById("viewPreDeparture").innerText = row.cells[8].innerText;
+    document.getElementById("viewAgency").innerText = row.cells[9].innerText;
     document.getElementById("viewStatus").innerText = status;
     document.getElementById("viewLocation").innerText = locationDetails.location;
     document.getElementById("viewDepartment").innerText = locationDetails.department;
@@ -1009,7 +1061,7 @@ function renderApplicationLocationChart(locationDetails) {
 
 function processPayment(element) {
     let row = element.closest("tr");
-    showNotification(`Processing payment for ${row.cells[2].innerText} (${row.cells[0].innerText})...`, "info");
+    showNotification(`Processing payment for ${row.cells[3].innerText} (${row.cells[0].innerText})...`, "info");
 }
 
 function openEditModal(element) {
@@ -1017,14 +1069,14 @@ function openEditModal(element) {
     document.getElementById("editAppId").value = row.cells[0].innerText;
     document.getElementById("editAppNo").value = row.cells[0].innerText;
     document.getElementById("editProposal").value = row.cells[1].innerText;
-    document.getElementById("editName").value = row.cells[2].innerText;
-    document.getElementById("editId").value = row.cells[3].innerText;
-    document.getElementById("editCountry").value = row.cells[4].innerText;
-    document.getElementById("editEmploymentType").value = row.cells[5].innerText;
-    document.getElementById("editAmount").value = row.cells[6].innerText.replace(/,/g, '');
-    document.getElementById("editPreDeparture").value = row.cells[7].innerText.replace(/,/g, '');
-    document.getElementById("editAgency").value = row.cells[8].innerText;
-    document.getElementById("editStatus").value = row.cells[9].innerText.trim();
+    document.getElementById("editName").value = row.cells[3].innerText;
+    document.getElementById("editId").value = row.cells[4].innerText;
+    document.getElementById("editCountry").value = row.cells[5].innerText;
+    document.getElementById("editEmploymentType").value = row.cells[6].innerText;
+    document.getElementById("editAmount").value = row.cells[7].innerText.replace(/,/g, '');
+    document.getElementById("editPreDeparture").value = row.cells[8].innerText.replace(/,/g, '');
+    document.getElementById("editAgency").value = row.cells[9].innerText;
+    document.getElementById("editStatus").value = row.cells[10].innerText.trim();
     document.getElementById("editAppModal").style.display = "flex";
 }
 

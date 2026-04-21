@@ -18,7 +18,7 @@
             <p class="page-subtitle">This finance page now matches the shared design while keeping all existing invoice details unchanged.</p>
         </div>
     </div>
-    <form method="GET" action="{{ route('fee_due') }}" class="card filter-card row g-3 mb-3">
+    <form method="GET" action="{{ route($feeDueRouteName ?? 'fee_due') }}" class="card filter-card row g-3 mb-3">
         <div class="col-md-4">
             <label class="form-label">Search By ID Number</label>
             <input type="text" class="form-control" name="id_no" value="{{ request('id_no') }}">

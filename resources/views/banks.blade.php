@@ -44,10 +44,16 @@
 <div class="card filter-card mb-3">
 <div class="row mb-0 g-3">
 <div class="col-md-4">
+<label class="card-label">Bank</label>
+<select id="bankFilter" class="form-control">
+<option value="all">All Banks</option>
+</select>
+</div>
+<div class="col-md-4">
 <label class="card-label">Branch Name</label>
 <input type="text" id="searchBranch" class="form-control" placeholder="Search by Branch Name">
 </div>
-<div class="col-md-8 text-end">
+<div class="col-md-4 text-end">
 <button class="btn btn-success" onclick="exportTableToCSV()">
 <i class="bi bi-file-earmark-excel"></i> Export Bank Details
 </button>
@@ -65,6 +71,7 @@
 <table class="table table-bordered table-hover" id="banksTable">
 <thead class="table-dark">
 <tr>
+<th>Logo</th>
 <th>Bank Name</th>
 <th>Bank Code</th>
 <th>Branch Name</th>
@@ -83,11 +90,16 @@
 
 </div>
 
+<form method="POST" id="deleteBankForm" style="display:none;">
+@csrf
+@method('DELETE')
+</form>
+
 <!-- Add Bank Modal -->
 <div class="modal fade" id="addBankModal">
 <div class="modal-dialog modal-lg">
 <div class="modal-content">
-<form method="POST" action="{{ route('banks.store') }}">
+<form method="POST" action="{{ route('banks.store') }}" enctype="multipart/form-data">
 @csrf
 <div class="modal-header bg-primary text-white">
 <h5 class="modal-title">Add Bank Details</h5>
@@ -137,12 +149,22 @@
 
 <div class="col-md-6">
 <label>Email</label>
-<input type="email" id="email" name="email" class="form-control">
+<input type="email" id="email" name="email" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label>Login Password</label>
+<input type="password" id="password" name="password" class="form-control" minlength="8" required>
 </div>
 
 <div class="col-md-6">
 <label>Tel No</label>
 <input type="text" id="tel" name="tel" class="form-control">
+</div>
+
+<div class="col-md-6">
+<label>Bank Logo</label>
+<input type="file" id="bankLogo" name="bank_logo" class="form-control" accept="image/*">
 </div>
 </div>
 </div>
@@ -156,6 +178,90 @@
 </div>
 </div>
 
+<!-- Edit Bank Modal -->
+<div class="modal fade" id="editBankModal">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<form method="POST" id="editBankForm" enctype="multipart/form-data">
+@csrf
+@method('PUT')
+<div class="modal-header bg-primary text-white">
+<h5 class="modal-title">Edit Bank Details</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body">
+<div class="row g-2">
+<div class="col-md-6">
+<label>Bank Name</label>
+<input type="text" id="editBankName" name="bank_name" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label>Bank Code</label>
+<input type="text" id="editBankCode" name="bank_code" class="form-control">
+</div>
+
+<div class="col-md-6">
+<label>Branch Name</label>
+<input type="text" id="editBranchName" name="branch_name" class="form-control">
+</div>
+
+<div class="col-md-6">
+<label>Branch Grade</label>
+<select id="editBranchGrade" name="branch_grade" class="form-control">
+<option value="A">A</option>
+<option value="B">B</option>
+<option value="C">C</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<label>Province</label>
+<select id="editProvince" name="province" class="form-control">
+<option value="Western">Western</option>
+<option value="Central">Central</option>
+<option value="Southern">Southern</option>
+<option value="Northern">Northern</option>
+<option value="Eastern">Eastern</option>
+<option value="North Western">North Western</option>
+<option value="North Central">North Central</option>
+<option value="Uva">Uva</option>
+<option value="Sabaragamuwa">Sabaragamuwa</option>
+</select>
+</div>
+
+<div class="col-md-6">
+<label>Email</label>
+<input type="email" id="editEmail" name="email" class="form-control" required>
+</div>
+
+<div class="col-md-6">
+<label>New Password</label>
+<input type="password" id="editPassword" name="password" class="form-control" minlength="8" placeholder="Leave blank to keep current password">
+</div>
+
+<div class="col-md-6">
+<label>Tel No</label>
+<input type="text" id="editTel" name="tel" class="form-control">
+</div>
+
+<div class="col-md-6">
+<label>Replace Bank Logo</label>
+<input type="file" id="editBankLogo" name="bank_logo" class="form-control" accept="image/*">
+</div>
+</div>
+</div>
+
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+<button type="submit" class="btn btn-success">Update Bank</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -163,6 +269,8 @@
 @php
     $bankRows = collect($banks ?? [])->map(function ($bank) {
         return [
+            'id' => $bank->id,
+            'logoUrl' => $bank->logo_url ?? null,
             'bankName' => $bank->bank_name ?? $bank->name ?? '',
             'bankCode' => $bank->bank_code ?? $bank->code ?? '',
             'branchName' => $bank->branch_name ?? $bank->branch ?? '',
@@ -176,11 +284,50 @@
 
 let banks = @json($bankRows);
 
-// Render Table
+function filteredBanks() {
+const selectedBank = (document.getElementById("bankFilter")?.value || "all").toLowerCase();
+const branchSearch = (document.getElementById("searchBranch")?.value || "").toLowerCase().trim();
+
+return banks.filter(bank => {
+const matchesBank = selectedBank === "all" || (bank.bankName || "").toLowerCase() === selectedBank;
+const matchesBranch = branchSearch === ""
+    || `${bank.bankName || ""} ${bank.branchName || ""} ${bank.bankCode || ""} ${bank.province || ""} ${bank.email || ""} ${bank.tel || ""}`.toLowerCase().includes(branchSearch);
+
+return matchesBank && matchesBranch;
+});
+}
+
+function populateBankFilter() {
+const bankFilter = document.getElementById("bankFilter");
+if(!bankFilter) {
+    return;
+}
+
+const currentValue = bankFilter.value || "all";
+const bankNames = [...new Set(
+    banks
+        .map(bank => (bank.bankName || "").trim())
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b))
+)];
+
+bankFilter.innerHTML = `<option value="all">All Banks</option>`;
+bankNames.forEach(bankName => {
+    const option = document.createElement("option");
+    option.value = bankName.toLowerCase();
+    option.textContent = bankName;
+    bankFilter.appendChild(option);
+});
+
+bankFilter.value = bankNames.some(bankName => bankName.toLowerCase() === currentValue) ? currentValue : "all";
+}
+
 function renderTable() {
 let html = "";
-banks.forEach((b, i) => {
+filteredBanks().forEach((b) => {
+const index = banks.findIndex(bank => bank.id === b.id);
 html += `<tr>
+<td>${b.logoUrl ? `<img src="${b.logoUrl}" alt="${b.bankName}" class="bank-directory-logo">` : `<span class="bank-directory-logo-fallback"><i class="bi bi-bank2"></i></span>`}</td>
 <td>${b.bankName}</td>
 <td>${b.bankCode}</td>
 <td>${b.branchName}</td>
@@ -189,29 +336,57 @@ html += `<tr>
 <td>${b.email}</td>
 <td>${b.tel}</td>
 <td>
-<button class="btn btn-sm btn-danger" onclick="deleteBank(${i})">
+<button class="btn btn-sm btn-primary me-2" onclick="openEditBankModal(${index})">
+<i class="bi bi-pencil-square"></i>
+</button>
+<button class="btn btn-sm btn-danger" type="button" onclick="deleteBank(${index})">
 <i class="bi bi-trash"></i>
 </button>
 </td>
 </tr>`;
 });
-document.getElementById("bankData").innerHTML = html;
+document.getElementById("bankData").innerHTML = html || `<tr><td colspan="9" class="text-center text-muted py-4">No bank records match the selected filter.</td></tr>`;
 }
 
 // Delete Bank
 function deleteBank(index) {
-banks.splice(index, 1);
-renderTable();
+let bank = banks[index];
+if(!bank || !bank.id) {
+    return;
 }
 
-// Search Branch Name
-document.getElementById("searchBranch").addEventListener("keyup", function() {
-let filter = this.value.toLowerCase();
-let rows = document.querySelectorAll("#bankData tr");
-rows.forEach(row => {
-row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
-});
-});
+if(!confirm(`Are you sure you want to delete ${bank.bankName || 'this bank'}?`)) {
+    return;
+}
+
+const deleteForm = document.getElementById("deleteBankForm");
+deleteForm.action = `{{ url('/banks') }}/${bank.id}`;
+deleteForm.submit();
+}
+
+function openEditBankModal(index) {
+let bank = banks[index];
+if(!bank || !bank.id) {
+    return;
+}
+
+document.getElementById("editBankForm").action = `{{ url('/banks') }}/${bank.id}`;
+document.getElementById("editBankName").value = bank.bankName || "";
+document.getElementById("editBankCode").value = bank.bankCode || "";
+document.getElementById("editBranchName").value = bank.branchName || "";
+document.getElementById("editBranchGrade").value = bank.branchGrade || "A";
+document.getElementById("editProvince").value = bank.province || "Western";
+document.getElementById("editEmail").value = bank.email || "";
+document.getElementById("editTel").value = bank.tel || "";
+document.getElementById("editBankLogo").value = "";
+document.getElementById("editPassword").value = "";
+
+const editModal = new bootstrap.Modal(document.getElementById("editBankModal"));
+editModal.show();
+}
+
+document.getElementById("searchBranch").addEventListener("keyup", renderTable);
+document.getElementById("bankFilter").addEventListener("change", renderTable);
 
 // Export CSV
 function exportTableToCSV() {
@@ -233,6 +408,7 @@ a.download = "banks_details.csv";
 a.click();
 }
 
+populateBankFilter();
 renderTable();
 </script>
 

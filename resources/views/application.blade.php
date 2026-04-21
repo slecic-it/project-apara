@@ -10,8 +10,30 @@
         <link rel="stylesheet" href="{{ asset('css/app.css') }}">
         <link rel="shortcut icon" href="Images/logo.png" />        
     </head>
-
+ 
     <body>
+        @php
+            $bankProfile = session('bank_profile');
+            $isBankUser = !empty($bankProfile);
+            $selectedBank = $isBankUser ? collect($banks ?? [])->first() : null;
+            $selectedBankName = $isBankUser ? ($selectedBank->bank_name ?? $selectedBank->name ?? ($bankProfile['bank_name'] ?? '')) : '';
+            $selectedBranchId = $isBankUser ? ($selectedBank->branch_id ?? $selectedBank->id ?? ($bankProfile['id'] ?? '')) : '';
+            $selectedBranchName = $isBankUser ? ($selectedBank->branch_name ?? ($bankProfile['branch_name'] ?? '')) : '';
+            $defaultWorkflowType = $selectedBank->workflow_type ?? 'decentralized';
+            $bankWorkflowMap = collect($banks ?? [])
+                ->mapWithKeys(function ($bank) {
+                    $bankName = trim((string) ($bank->bank_name ?? $bank->name ?? ''));
+
+                    return $bankName !== ''
+                        ? [$bankName => [
+                            'type' => $bank->workflow_type ?? 'decentralized',
+                            'label' => $bank->workflow_label ?? 'Decentralized Bank',
+                            'description' => $bank->workflow_description ?? 'New applications move directly from the bank branch to the Marketing Department.',
+                        ]]
+                        : [];
+                })
+                ->all();
+        @endphp
         @include('layouts.sidebar')
         @include('layouts.header')
 
@@ -20,7 +42,7 @@
             <div class="container">
 
 
-            <form action="{{ route('application.store') }}" method="POST" target="_self" id="newApplication" enctype="multipart/form-data">
+            <form action="{{ $isBankUser ? route('bank.application.store') : route('application.store') }}" method="POST" target="_self" id="newApplication" enctype="multipart/form-data">
                 @csrf
                 <div class="container mt-5">
                     @if ($errors->any())
@@ -42,40 +64,59 @@
                             <div class="row g-4">
                                 <div class="w-100">
                                     <label for="selectedBankName" class="form-label">Select Bank<span style="color: red">*</span></label>
-                                    <select name="selected_bank_name" id="selectedBankName" class="form-control mb-3 bg-light" required>
-                                        <option value="">-- Select Bank --</option>
-                                        @foreach(collect($banks)->map(fn ($bank) => $bank->bank_name ?? $bank->name ?? null)->filter()->unique()->values() as $bankName)
-                                            <option value="{{ $bankName }}">{{ $bankName }}</option>
-                                        @endforeach
-                                    </select>
+                                    @if($isBankUser)
+                                        <input type="text" class="form-control mb-3 bg-light" value="{{ $selectedBankName }}" readonly>
+                                        <input type="hidden" name="selected_bank_name" id="selectedBankName" value="{{ $selectedBankName }}">
+                                    @else
+                                        <select name="selected_bank_name" id="selectedBankName" class="form-control mb-3 bg-light" required>
+                                            <option value="">-- Select Bank --</option>
+                                            @foreach(collect($banks)->map(fn ($bank) => $bank->bank_name ?? $bank->name ?? null)->filter()->unique()->values() as $bankName)
+                                                <option value="{{ $bankName }}">{{ $bankName }}</option>
+                                            @endforeach
+                                        </select>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="w-100">
+                                    <div class="alert alert-info mb-3" id="bankWorkflowNotice">
+                                        <strong id="bankWorkflowLabel">{{ $selectedBank->workflow_label ?? 'Decentralized Bank' }}</strong>
+                                        <div id="bankWorkflowDescription">{{ $selectedBank->workflow_description ?? 'New applications move directly from the bank branch to the Marketing Department.' }}</div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="row g-4">
                                 <div class="w-100">
                                     <label for="forBranchBankId" class="form-label">Select Branch (For Which Application Is Submitted)<span style="color: red">*</span></label>
-                                    <select name="for_branch_bank_id" id="forBranchBankId" class="form-control mb-3 bg-light" required>
-                                        <option value="">-- Select Bank First --</option>
-                                        @foreach($banks as $bank)
-                                            @php
-                                                $bankId = $bank->id ?? '';
-                                                $branchName = $bank->branch_name ?? $bank->branch ?? $bank->name ?? $bank->bank_name ?? 'Bank Branch';
-                                                $bankName = $bank->bank_name ?? $bank->name ?? '';
-                                            @endphp
-                                            <option value="{{ $bankId }}" data-bank-name="{{ $bankName }}" style="display:none;">
-                                                {{ $branchName }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    @if($isBankUser)
+                                        <input type="text" class="form-control mb-3 bg-light" value="{{ $selectedBranchName }}" readonly>
+                                        <input type="hidden" name="for_branch_bank_id" id="forBranchBankId" value="{{ $selectedBranchId }}">
+                                    @else
+                                        <select name="for_branch_bank_id" id="forBranchBankId" class="form-control mb-3 bg-light" required>
+                                            <option value="">-- Select Bank First --</option>
+                                            @foreach($banks as $bank)
+                                                @php
+                                                    $bankId = $bank->branch_id ?? $bank->id ?? '';
+                                                    $branchName = $bank->branch_name ?? $bank->branch ?? $bank->name ?? $bank->bank_name ?? 'Bank Branch';
+                                                    $bankName = $bank->bank_name ?? $bank->name ?? '';
+                                                @endphp
+                                                <option value="{{ $bankId }}" data-bank-name="{{ $bankName }}" style="display:none;">
+                                                    {{ $branchName }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @endif
                                 </div>
                             </div>
 
                             <?php 
                             // if ($isCentralizedBank && $bankName == 'DFCC'): 
                             ?>
-                                <div class="row g-4">
+                                <div class="row g-4" id="headOfficeFieldGroup">
                                     <div class="w-100">
-                                        <label for="hoEnteredBy" class="form-label">Entered By (Head Office)<span style="color: red">*</span></label>
+                                        <label for="hoEnteredBy" class="form-label">Entered By (Head Office)<span style="color: red" id="headOfficeRequiredMark">*</span></label>
                                         <select name="ho_entered_by" id="hoEnteredBy" class="form-control mb-3 bg-light" required>
                                             <option value="">Select Officer</option>
                                             <option value="Tharangani Peiris">Tharangani Peiris</option>
@@ -83,6 +124,7 @@
                                             <option value="Nadeesha Thirkawala">Nadeesha Thirkawala</option>
                                             <option value="Jayapalan Prabhash">Jayapalan Prabhash</option>
                                         </select>
+                                        <small class="text-muted d-block" id="headOfficeHelpText">Required only for centralized banks before the application moves to Marketing.</small>
                                     </div>
                                 </div>
                             <?php 
@@ -373,7 +415,7 @@
                 <div class="container mt-4">
                     <div class="text-start">
                         <button onclick='return confirm("Are you sure you want to submit this application?")' type="Submit" class="btn btn-common" id="addApplication" name="addApplication" value="Submit"><i class="bi bi-save icon-spacing"></i>Submit</button>
-                        <a href="{{ route('bank.dashboard') }}" class="btn btn-common" onclick="return confirm('Are you sure you want to cancel this application?')">
+                        <a href="{{ !empty(session('bank_profile')) ? route('bank.dashboard') : route('dashboard') }}" class="btn btn-common" onclick="return confirm('Are you sure you want to cancel this application?')">
                             <i class="bi bi-x-circle icon-spacing"></i> Cancel
                         </a>
                     </div>
@@ -396,6 +438,70 @@ document.addEventListener('DOMContentLoaded', function () {
     const branchSelect = document.getElementById('forBranchBankId');
     const provinceSelect = document.getElementById('inputProvince');
     const districtSelect = document.getElementById('inputDistrict');
+    const workflowNotice = document.getElementById('bankWorkflowNotice');
+    const workflowLabel = document.getElementById('bankWorkflowLabel');
+    const workflowDescription = document.getElementById('bankWorkflowDescription');
+    const headOfficeFieldGroup = document.getElementById('headOfficeFieldGroup');
+    const headOfficeSelect = document.getElementById('hoEnteredBy');
+    const headOfficeRequiredMark = document.getElementById('headOfficeRequiredMark');
+    const headOfficeHelpText = document.getElementById('headOfficeHelpText');
+    const bankLocked = @json($isBankUser);
+    const defaultWorkflowType = @json($defaultWorkflowType);
+    const workflowMap = @json($bankWorkflowMap);
+
+    function currentWorkflowForBank(bankName) {
+        if (bankName && workflowMap[bankName]) {
+            return workflowMap[bankName];
+        }
+
+        return {
+            type: defaultWorkflowType || 'decentralized',
+            label: 'Decentralized Bank',
+            description: 'New applications move directly from the bank branch to the Marketing Department.'
+        };
+    }
+
+    function applyWorkflowState() {
+        const selectedBankName = bankSelect ? bankSelect.value : '';
+        const workflow = currentWorkflowForBank(selectedBankName);
+        const requiresHeadOffice = workflow.type === 'centralized';
+
+        if (workflowLabel) {
+            workflowLabel.textContent = workflow.label || 'Decentralized Bank';
+        }
+
+        if (workflowDescription) {
+            workflowDescription.textContent = workflow.description || 'New applications move directly from the bank branch to the Marketing Department.';
+        }
+
+        if (workflowNotice) {
+            workflowNotice.classList.toggle('alert-warning', requiresHeadOffice);
+            workflowNotice.classList.toggle('alert-info', !requiresHeadOffice);
+        }
+
+        if (headOfficeFieldGroup) {
+            headOfficeFieldGroup.style.display = requiresHeadOffice ? '' : 'none';
+        }
+
+        if (headOfficeSelect) {
+            headOfficeSelect.required = requiresHeadOffice;
+            headOfficeSelect.disabled = !requiresHeadOffice;
+
+            if (!requiresHeadOffice) {
+                headOfficeSelect.value = '';
+            }
+        }
+
+        if (headOfficeRequiredMark) {
+            headOfficeRequiredMark.style.display = requiresHeadOffice ? '' : 'none';
+        }
+
+        if (headOfficeHelpText) {
+            headOfficeHelpText.textContent = requiresHeadOffice
+                ? 'Required for centralized banks before the application moves to Marketing.'
+                : 'For decentralized banks, the application goes directly to the Marketing Department.';
+        }
+    }
 
     function updateBranchOptions() {
         if (!bankSelect || !branchSelect) {
@@ -425,10 +531,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    if (bankSelect) {
-        bankSelect.addEventListener('change', updateBranchOptions);
+    if (bankSelect && !bankLocked) {
+        bankSelect.addEventListener('change', function () {
+            updateBranchOptions();
+            applyWorkflowState();
+        });
         updateBranchOptions();
     }
+
+    applyWorkflowState();
 
     provinceSelect.addEventListener('change', function () {
         const provinceId = this.value;

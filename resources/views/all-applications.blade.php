@@ -3,18 +3,31 @@
 @section('title', 'All Applications')
 
 @section('content')
+@php
+    $isBankUser = !empty(session('bank_profile'));
+    $showRoute = $isBankUser ? 'bank.application.show' : 'application.show';
+@endphp
 <div class="page-shell">
     <div class="page-header">
         <div class="page-header-content">
-            <h3 class="page-heading">All Applications</h3>
-            <p class="page-subtitle">Every submitted application is collected here so the full list can be reviewed in one place.</p>
+            <h3 class="page-heading">{{ $filterLabel ?? 'All Applications' }}</h3>
+            <p class="page-subtitle">Application records shown here follow the currently logged-in workspace context.</p>
         </div>
     </div>
 
     <div class="table-card p-3">
         <div class="table-title-row">
-            <h5>Application Records</h5>
-            <span class="table-meta">Latest submissions from the dashboard will appear here automatically.</span>
+            <div>
+                <h5>Application Records</h5>
+                <span class="table-meta">Use the quick status filters to narrow the visible applications.</span>
+            </div>
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-primary btn-sm all-applications-filter active" data-status="all">All</button>
+                <button type="button" class="btn btn-primary btn-sm all-applications-filter" data-status="pending">Pending</button>
+                <button type="button" class="btn btn-primary btn-sm all-applications-filter" data-status="approved">Approved</button>
+                <button type="button" class="btn btn-primary btn-sm all-applications-filter" data-status="accepted">Accepted</button>
+                <button type="button" class="btn btn-primary btn-sm all-applications-filter" data-status="rejected">Rejected</button>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -23,17 +36,54 @@
                     <tr>
                         <th>App No</th>
                         <th>Proposal</th>
-                        <th>Full Name</th>
+                        <th>Customer</th>
                         <th>ID/Passport</th>
                         <th>Country</th>
                         <th>Employment Type</th>
-                        <th>Guarantee Amount</th>
-                        <th>Pre Departure</th>
-                        <th>Recruitment Agency</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-                <tbody id="allApplicationsTable"></tbody>
+                <tbody id="allApplicationsTable">
+                    @forelse($applications as $application)
+                        @php $status = strtolower($application->status ?? 'pending'); @endphp
+                        <tr data-status="{{ $status }}">
+                            <td>
+                                <a
+                                    href="{{ route($showRoute, ['id' => $application->id, 'marketing' => $marketingFilter ?: null]) }}"
+                                    class="application-number-link"
+                                >
+                                    APP-{{ str_pad((string) ($application->id ?? 0), 4, '0', STR_PAD_LEFT) }}
+                                </a>
+                            </td>
+                            <td>
+                                <a
+                                    href="{{ route($showRoute, ['id' => $application->id, 'marketing' => $marketingFilter ?: null]) }}"
+                                    class="application-number-link"
+                                >
+                                    {{ $application->proposal_no ?? '-' }}
+                                </a>
+                            </td>
+                            <td>{{ $application->full_name ?? '-' }}</td>
+                            <td>{{ $application->nic ?? ($application->passport_no ?? '-') }}</td>
+                            <td>{{ $application->country_name ?? '-' }}</td>
+                            <td>{{ $application->employment_type ?? '-' }}</td>
+                            <td>
+                                <span class="badge
+                                    @if ($status === 'approved') bg-success
+                                    @elseif ($status === 'accepted') bg-info
+                                    @elseif ($status === 'rejected') bg-danger
+                                    @else bg-warning text-dark
+                                    @endif">
+                                    {{  (str_replace('_', ' ', $status)) }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">No applications found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
             </table>
         </div>
     </div>
@@ -43,100 +93,25 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const storageKey = 'slecic_all_applications';
-    const tableBody = document.getElementById('allApplicationsTable');
+    const filterButtons = document.querySelectorAll('.all-applications-filter');
+    const rows = document.querySelectorAll('#allApplicationsTable tr[data-status]');
 
-    if (!tableBody) {
-        return;
-    } 
+    filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            const selectedStatus = (button.dataset.status || 'all').toLowerCase();
 
-    const defaultApplications = [
-        {
-            appNo: 'APP-0012',
-            proposal: 'PR-556',
-            fullName: 'John Doe',
-            idNumber: '902134567V',
-            country: 'Saudi Arabia',
-            employmentType: 'Skilled Worker',
-            guaranteeAmount: '500,000',
-            preDepartureAmount: '100,000',
-            agencyName: 'Global Manpower',
-            status: 'Pending'
-        },
-        {
-            appNo: 'APP-0015',
-            proposal: 'PR-892',
-            fullName: 'Jane Smith',
-            idNumber: '823456789V',
-            country: 'UAE',
-            employmentType: 'Driver',
-            guaranteeAmount: '750,000',
-            preDepartureAmount: '150,000',
-            agencyName: 'Overseas Recruiters',
-            status: 'Accepted'
-        },
-        {
-            appNo: 'APP-0021',
-            proposal: 'PR-124',
-            fullName: 'Robert Johnson',
-            idNumber: '765432198V',
-            country: 'Qatar',
-            employmentType: 'Engineer',
-            guaranteeAmount: '1,200,000',
-            preDepartureAmount: '250,000',
-            agencyName: 'Tech Recruiters',
-            status: 'Approved'
-        }
-    ];
+            filterButtons.forEach(function (item) {
+                item.classList.remove('active');
+            });
 
-    function escapeHtml(value) {
-        return String(value ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
+            button.classList.add('active');
 
-    function statusBadgeClass(status) {
-        switch ((status || '').toLowerCase()) {
-            case 'accepted':
-                return 'bg-info';
-            case 'approved':
-                return 'bg-success';
-            case 'rejected':
-                return 'bg-danger';
-            default:
-                return 'bg-warning';
-        }
-    }
-
-    let storedApplications = [];
-
-    try {
-        storedApplications = JSON.parse(localStorage.getItem(storageKey) || '[]');
-    } catch (error) {
-        storedApplications = [];
-    }
-
-    const applications = [...defaultApplications, ...storedApplications];
-
-    tableBody.innerHTML = applications.map(function (application) {
-        return `
-            <tr>
-                <td>${escapeHtml(application.appNo)}</td>
-                <td>${escapeHtml(application.proposal)}</td>
-                <td>${escapeHtml(application.fullName)}</td>
-                <td>${escapeHtml(application.idNumber)}</td>
-                <td>${escapeHtml(application.country)}</td>
-                <td>${escapeHtml(application.employmentType)}</td>
-                <td>${escapeHtml(application.guaranteeAmount)}</td>
-                <td>${escapeHtml(application.preDepartureAmount)}</td>
-                <td>${escapeHtml(application.agencyName)}</td>
-                <td><span class="badge ${statusBadgeClass(application.status)}">${escapeHtml(application.status)}</span></td>
-            </tr>
-        `;
-    }).join('');
+            rows.forEach(function (row) {
+                const rowStatus = (row.dataset.status || '').toLowerCase();
+                row.style.display = selectedStatus === 'all' || rowStatus === selectedStatus ? '' : 'none';
+            });
+        });
+    });
 });
 </script>
 @endpush

@@ -25,37 +25,42 @@
                     <h4 class="card-title text-center">Bank Registration</h4>
                     <div class="title-divider"></div>
 
-                    <form action="{{ route('bank.register') }}" method="POST">
+                    <form action="{{ route('bank.register.submit') }}" method="POST">
                         @csrf
 
                         <div class="mb-3">
                             <label class="form-label">Bank Name</label>
-                            <input type="text" name="bank_name" class="form-control" placeholder="e.g. National Bank" required>
+                            <input type="text" name="bank_name" class="form-control" placeholder="e.g. National Bank" value="{{ old('bank_name') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Branch Name</label>
-                            <input type="text" name="branch_name" class="form-control" placeholder="e.g. Colombo Main Branch" required>
+                            <input type="text" name="branch_name" class="form-control" placeholder="e.g. Colombo Main Branch" value="{{ old('branch_name') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Branch Code</label>
-                            <input type="text" name="branch_code" class="form-control" placeholder="e.g. 0012" required>
+                            <input type="text" name="branch_code" class="form-control" placeholder="e.g. 0012" value="{{ old('branch_code') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">NIC / ID Number</label>
-                            <input type="text" name="nic" class="form-control" placeholder="e.g. 200012345678" required>
+                            <input type="text" name="nic" class="form-control" placeholder="e.g. 200012345678" value="{{ old('nic') }}" required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Contact Number</label>
-                            <input type="tel" name="contact" class="form-control" placeholder="e.g. 0771234567" required>
+                            <input type="tel" name="contact" class="form-control" placeholder="e.g. 0771234567" value="{{ old('contact') }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control" placeholder="e.g. branch@email.com" value="{{ old('email') }}" required>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label">Email Address</label>
-                            <input type="email" name="email" class="form-control" placeholder="e.g. branch@email.com">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Create a secure password" required>
                         </div>
 
                         <div class="d-grid">
@@ -69,7 +74,7 @@
                 <!-- Card Footer -->
                 <div class="card-footer text-center">
                     Already have an account?
-                    <a href="{{ route('login.form') }}">Login</a>
+                    <a href="{{ route('bank.login.form') }}">Bank Login</a>
                 </div>
 
             </div>

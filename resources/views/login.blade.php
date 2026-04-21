@@ -88,6 +88,12 @@
 
                 <hr>
 
+                <div class="text-center mb-3">
+                    <a href="{{ route('bank.login.form') }}" class="text-decoration-none small" style="color:#102b44;">
+                        Bank login
+                    </a>
+                </div>
+
                 <div class="text-center footer-text brand-subtitle">
                     © {{ date('Y') }} Sri Lanka Export Credit Insurance Corporation  
                     <br>

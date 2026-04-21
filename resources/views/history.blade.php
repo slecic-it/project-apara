@@ -27,7 +27,7 @@
   <div class="card filter-card mb-3 payment-history-filter-card">
     <div class="row g-4 align-items-stretch">
       <div class="col-lg-7">
-        <form method="GET" action="{{ route('history') }}" class="row g-3 h-100">
+        <form method="GET" action="{{ route($historyRouteName ?? 'history') }}" class="row g-3 h-100">
           <div class="col-md-6">
             <label class="form-label">Payment Ref</label>
             <input type="text" class="form-control" name="payment_ref" value="{{ request('payment_ref') }}">

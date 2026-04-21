@@ -9,7 +9,7 @@
         <p class="text-muted mb-0">Operational and finance snapshot for {{ $summary['periodLabel'] }}</p>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <a href="{{ route('monthly-report.pdf') }}" class="btn btn-outline-primary btn-sm">Download PDF Summary</a>
+        <a href="{{ route($monthlyReportPdfRouteName ?? 'monthly-report.pdf') }}" class="btn btn-outline-primary btn-sm">Download PDF Summary</a>
         <span class="badge bg-primary-subtle text-primary px-3 py-2">{{ $summary['periodLabel'] }}</span>
     </div>
 </div>

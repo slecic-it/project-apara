@@ -18,7 +18,7 @@
         <p class="page-subtitle">Finance pages now use the same shared layout while keeping all invoice details unchanged.</p>
       </div>
     </div>
-    <form method="GET" action="{{ route('invoice') }}" class="card filter-card row g-3 mb-3">
+    <form method="GET" action="{{ route($invoiceRouteName ?? 'invoice') }}" class="card filter-card row g-3 mb-3">
       <div class="col-md-4">
         <label class="form-label">Search By ID Number</label>
         <input type="text" class="form-control" name="id_no" value="{{ request('id_no') }}">

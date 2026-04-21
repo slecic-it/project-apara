@@ -18,7 +18,7 @@
       <p class="page-subtitle">Receipt records now share the same clean layout as the rest of the finance section.</p>
     </div>
   </div>
-  <form method="GET" action="{{ route('receipt') }}" class="card filter-card row g-3 mb-3">
+  <form method="GET" action="{{ route($receiptRouteName ?? 'receipt') }}" class="card filter-card row g-3 mb-3">
       <div class="col-md-4">
         <label class="form-label">Search By ID Number</label>
         <input type="text" class="form-control" name="id_no" value="{{ request('id_no') }}">
